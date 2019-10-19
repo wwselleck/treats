@@ -30,3 +30,17 @@ Take for instance a potential Twitch module. If someone I'm following is current
 
 You can imagine what kinds of rules each of the other kinds of modules may use to determine its respective importance. 
 
+## Solution
+
+### Treat
+Content is exposed via Treats (hence the project name), which are just logical groupings of content. Treats determine a set of Treat Items, and then score those items to designate the importance of those items. Some examples of Treats may be...
+
+- An 'RSS' Treat, that allows you to subscribe to multiple RSS feeds. Some potential configuration options for determing score: Specifying certain RSS that are more important than the others, a keyword matcher that adjusts the score of RSS items whose text content matches a certain keyword
+
+- A 'Trello' Treat, that exposes certain cards on your Trello boards as Treat items. You could configure the Treat to return cards on  your "To-Do" board that are overdue, or have recent comments on them. Or configure your "Albums I Want to Listen To" board to randomly give you an album to listen to every once in awhile. 
+
+- A 'Reddit' Treat, similar to the RSS feed in terms of configuration, but from Reddit instead of RSS.
+
+- A sports treat, that posts sports scores and ongoing games as Treat items. You could configure it with your favorite teams, so that if your favorite teams were currently playing, it could create an item with a very high importance since you probably want to know about it if you don't already.
+
+- A 
