@@ -48,7 +48,19 @@ Content is exposed via a Treat (hence the project name), which is just a logical
 ### Treat Item
 As mentioned before, Treats output a list of Treat Items, which are just individual items of content. They might be equivalent to an RSS item, or a sports score, or a Twitch stream, or a stock ticker, etc. They would contain some standard base information, like title, description, url, score, etc., and then possibly some Treat-specific info. 
 
-### Treat Item "Filters
+### Treat Item "Filters"
+On top of the logic built in to each Treat that determines each Item's initial score, users should be able to add their own "filters" for which items are important, and those that aren't. These filters would accept Treat Items and some configuration, and would output Treat Items, modifying them in some way. They could adjust item's scores, they could add items, remove items, combine items, whatever. These filters could also be general, i.e. usable by all Treats, or Treat-specific. 
+
+> As an aside, I don't think the name "filters" is very accurate for what I'm trying to describe. "Filter" implies that it accepts X items, and returns <= X items, not modified. These Treats filters could return any number of Treat Items, and those Items could be modified from the version that was passed to the filter. But for now, I'll refer the them as filters until I think of a better name.
+
+Some examples of filters might be...
+
+- A "keywords" filter that increases or decreases an item's score by a certain amount if its title or description contains a specified keyword(s). 
+- A Reddit-specific filter, that filters out posts made by certain Reddit users. 
+- A date filter, that applies a general multiplier to items based on how recent they are.
+
+> As I'm typing this out, I'm realizing that Treat-specific filters may be better suited as being represented in the same way that general Treat configuration is. They may have a conceptual difference, but to the user they could be seen as the same thing, and be confused as to why they're displayed differently. 
+
 
 ```
 +----------------------+    +----------------------+    +----------------------+                       +----------------------+
