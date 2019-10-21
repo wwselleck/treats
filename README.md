@@ -60,6 +60,11 @@ As mentioned before, Treats output a list of Treat Items, which are just individ
 +-----------+----------+    +-----------+----------+    +------------+---------+                       +-----------+----------+
             |                           |                            |                                             |
             |                           |                            |                                             |
+            |                           |              +-------------+----------+                                  |
+            |                           |              |                        |                                  |
+            |                           |              | Reddit-Specific Filter |                                  |
+            |                           |              |                        |                                  |
+            |                           |              +-------------+----------+                                  |
             |                           |                            |                                             |
             |                           |                            |                                             |
             |                           |                            |                                             |
@@ -96,6 +101,7 @@ As mentioned before, Treats output a list of Treat Items, which are just individ
                                                                       |
                                                                       v
                                                                     OUTPUT
+
 
 ```
 
