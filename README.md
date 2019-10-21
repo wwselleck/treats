@@ -33,7 +33,7 @@ You can imagine what kinds of rules each of the other kinds of modules may use t
 ## Solution
 
 ### Treat
-Content is exposed via Treats (hence the project name), which are just logical groupings of content. Treats determine a set of Treat Items, and then score those items to designate the importance of those items. Some examples of Treats may be...
+Content is exposed via a Treat (hence the project name), which is just a logical grouping of content and associated configuration. Treats determine a set of Treat Items upon request, and then score those items to designate the importance of those items. Some examples of Treats may be...
 
 - An 'RSS' Treat, that allows you to subscribe to multiple RSS feeds. Some potential configuration options for determing score: Specifying certain RSS that are more important than the others, a keyword matcher that adjusts the score of RSS items whose text content matches a certain keyword
 
@@ -41,6 +41,70 @@ Content is exposed via Treats (hence the project name), which are just logical g
 
 - A 'Reddit' Treat, similar to the RSS feed in terms of configuration, but from Reddit instead of RSS.
 
-- A sports treat, that posts sports scores and ongoing games as Treat items. You could configure it with your favorite teams, so that if your favorite teams were currently playing, it could create an item with a very high importance since you probably want to know about it if you don't already.
+- A sports Treat, that posts sports scores and ongoing games as Treat items. You could configure it with your favorite teams, so that if your favorite teams were currently playing, it could create an item with a very high importance since you probably want to know about it if you don't already.
 
-- A 
+- A stocks Treat, configured with stocks you want to be alerted about, whose score is affected by the % change that day
+
+### Treat Item
+As mentioned before, Treats output a list of Treat Items, which are just individual items of content. They might be equivalent to an RSS item, or a sports score, or a Twitch stream, or a stock ticker, etc. They would contain some standard base information, like title, description, url, score, etc., and then possibly some Treat-specific info. 
+
+### Treat Item "Filters"
+
+
++----------------------+    +----------------------+    +----------------------+                       +----------------------+
+|                      |    |                      |    |                      |                       |                      |
+|                      |    |                      |    |                      |                       |                      |
+|     RSS Treat 1      |    |     Twitch Treat     |    |     Reddit Treat     |                       |     RSS Treat 2      |
+|                      |    |                      |    |                      |                       |                      |
+|                      |    |                      |    |                      |                       |                      |
++-----------+----------+    +-----------+----------+    +------------+---------+                       +-----------+----------+
+            |                           |                            |                                             |
+            |                           |                            |                                             |
+            |                           |                            |                                             |
+            |                           |                            |                                             |
+            |                           |                            |                                             |
+            |                           |                            |                                             |
+            +--------------------------------------------------------+                                             |
+                                        |                                                                          |
+                                        |                                                                          |
+                                        |                                                                          |
+                                        v                                                                          |
+            +---------------------------+----------------------------+                                             |
+            |                                                        |                                             |
+            |                        Filter 1                        |                                             |
+            |                                                        |                                             |
+            |                                                        |                                             |
+            +---------------------------+----------------------------+                                             |
+                                        |                                                                          |
+                                        |                                                                          |
+                                        |                                                                          |
+                                        +---------------------------+  +-------------------------------------------+
+                                                                    |  |
+                                                                    |  |
+                                                                    |  |
+                                                                    v  v
+                                          +-------------------------+--+---------------------------+
+                                          |                                                        |
+                                          |                        Filter 2                        |
+                                          |                                                        |
+                                          |                                                        |
+                                          +---------------------------+----------------------------+
+                                                                      |
+                                                                      |
+                                                                      |
+                                                                      |
+                                                                      |
+                                                                      v
+                                                                    OUTPUT
+
+
+
+
+
+
+
+
+
+
+
+
