@@ -48,9 +48,9 @@ Content is exposed via a Treat (hence the project name), which is just a logical
 ### Treat Item
 As mentioned before, Treats output a list of Treat Items, which are just individual items of content. They might be equivalent to an RSS item, or a sports score, or a Twitch stream, or a stock ticker, etc. They would contain some standard base information, like title, description, url, score, etc., and then possibly some Treat-specific info. 
 
-### Treat Item "Filters"
+### Treat Item "Filters
 
-
+```
 +----------------------+    +----------------------+    +----------------------+                       +----------------------+
 |                      |    |                      |    |                      |                       |                      |
 |                      |    |                      |    |                      |                       |                      |
@@ -97,7 +97,7 @@ As mentioned before, Treats output a list of Treat Items, which are just individ
                                                                       v
                                                                     OUTPUT
 
-
+```
 
 
 
