@@ -117,9 +117,20 @@ Some examples of filters might be...
 
 ```
 
+### Treat Item Views
+I'm not going to get too specific on what the exact front-end for Treats is going to look like (mainly because I haven't thought that much about it), but there's one feature I'm making an initial goal of the project: Treat-Specific Views.
 
+Something like an RSS reader will only show you so much. It'll give you the title, description, and link of the RSS item, and then normally upon expansion, it will show the content of the URL, if it's able to find it. 
 
+In Treats, the front-end should contain Treat-specific components, that are capable of rendering more interesting "previews" of content. For example, a sports Treat Item could contain the score of a game going on, and upon expansion could show an interactive box score, and maybe even search Twitter for the top Tweets related to that game.
 
+This is something I'll write more about as I get closer to implementing a front-end. For now, it's an idea.
+
+## Implemenation
+### API
+### Front-End
+### Technologies
+## FAQ (frequently asked by me, to myself)
 
 
 
