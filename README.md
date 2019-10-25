@@ -127,9 +127,41 @@ In Treats, the front-end should contain Treat-specific components, that are capa
 This is something I'll write more about as I get closer to implementing a front-end. For now, it's an idea.
 
 ## Implemenation
-### API
-### Front-End
-### Technologies
+### Server
+#### Technologies
+Language: Go
+Database: Mongo
+#### Models
+##### Treat
+A Treat is a definition of a source for Treat Items. 
+```
+{
+  id: String 
+  name: String # This is the internal identifier for the Treat. Enforced uniqueness, and should not be changed.
+  displayName: String
+  configOptions: 
+  
+}
+```
+##### TreatItem
+A TreatItem is an item of content. 
+```
+{
+  id: String
+  title: String
+  description?: String
+  link?: String
+  score: Int # The "importance" of this item, between 0-1000
+  info?: Object # A Treat-specific object to store any extra data about the item
+}
+```
+#### API Endpoints
+##### Treats
+**GET /treats**
+Get a list of all available treats
+##### User Management and Configuration
+**POST /user/:idUser**
+### Client
 ## FAQ (frequently asked by me, to myself)
 
 
