@@ -132,15 +132,29 @@ This is something I'll write more about as I get closer to implementing a front-
 Language: Go
 Database: Mongo
 #### Models
-##### Treat
-A Treat is a definition of a source for Treat Items. 
+##### TreatDefinition
+A TreatDefinition is a definition of a source for Treat Items. 
 ```
 {
   id: String 
-  name: String # This is the internal identifier for the Treat. Enforced uniqueness, and should not be changed.
-  displayName: String
-  configOptions: 
-  
+  name: String
+  configOptions: Array<{
+    id: String
+    name: String
+    type: String
+  }>
+}
+```
+
+##### Treat
+A Treat is a configured TreatDefinition that can be used to fetch TreatItems
+```
+{
+  id: String
+  idDefinition: String
+  config: {
+    [idOption: String]: JSONValue
+  }
 }
 ```
 ##### TreatItem
@@ -155,10 +169,24 @@ A TreatItem is an item of content.
   info?: Object # A Treat-specific object to store any extra data about the item
 }
 ```
+
 #### API Endpoints
 ##### Treats
-**GET /treats**
-Get a list of all available treats
+**GET /treatDefinition**
+Get a list of all available TreatDefinitions
+
+**GET /treatDefinition/:idDefinition**
+Get a specific TreatDefinition
+
+**GET /treat**
+Get a list of all available Treats
+
+**GET /treat/:idTreat**
+Get specific Treat
+
+**GET /treat/:idTreat/items**
+Fetch the TreatItems for a Treat
+
 ##### User Management and Configuration
 **POST /user/:idUser**
 ### Client
