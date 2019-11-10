@@ -181,6 +181,9 @@ Get a specific TreatDefinition
 **GET /treat**
 Get a list of all available Treats
 
+**POST /treat**
+Create a Treat
+
 **GET /treat/:idTreat**
 Get specific Treat
 
@@ -192,8 +195,24 @@ Fetch the TreatItems for a Treat
 ### Client
 ## FAQ (frequently asked by me, to myself)
 
+## Milestones
 
+### Milestone 1
 
+- [ ] RSS TreatDefinition
+- [ ] Twitch TreatDefinition
+- [ ] Reddit TreatDefinition
+- [ ] GET /treatDefinition 
 
+For this milestone, the Treat Definitions can be hard-coded, either in the database, directly in the source code, or whatever.  
+
+- [ ] GET /treatDefinition/:idDefinition
+- [ ] GET /treat
+
+For this milestone, all treats will be globally accessible. Users and permissions will not exist for this milestone.
+
+- [ ] POST /treat
+- [ ] GET /treat/:idTreat
+- [ ] GET /treat/:idTreat/items
 
 
