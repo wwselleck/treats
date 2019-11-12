@@ -132,12 +132,27 @@ This is something I'll write more about as I get closer to implementing a front-
 Language: Go
 Database: Mongo
 #### Models
-##### TreatDefinition
 A TreatDefinition is a definition of a source for Treat Items. 
 ```
 {
   id: String 
   name: String
+
+}
+```
+
+##### Treat
+A Treat is a source of TreatItems
+```
+{
+  id: String
+  // A Treat can provide its own configOptions, and then be
+  // used as the Parent of another Treat, which then provides
+  // values for those config options.
+  idParent: String
+  parentConfig: {
+    [optionName: string]: JSONValue
+  },
   configOptions: Array<{
     id: String
     name: String
@@ -146,17 +161,6 @@ A TreatDefinition is a definition of a source for Treat Items.
 }
 ```
 
-##### Treat
-A Treat is a configured TreatDefinition that can be used to fetch TreatItems
-```
-{
-  id: String
-  idDefinition: String
-  config: {
-    [idOption: String]: JSONValue
-  }
-}
-```
 ##### TreatItem
 A TreatItem is an item of content. 
 ```
@@ -172,12 +176,6 @@ A TreatItem is an item of content.
 
 #### API Endpoints
 ##### Treats
-**GET /treatDefinition**
-Get a list of all available TreatDefinitions
-
-**GET /treatDefinition/:idDefinition**
-Get a specific TreatDefinition
-
 **GET /treat**
 Get a list of all available Treats
 
@@ -198,19 +196,14 @@ Fetch the TreatItems for a Treat
 ## Milestones
 
 ### Milestone 1
+For this milestone, the base Parent Treats can be hard-coded, either in the database, directly in the source code, or whatever.  
 
-- [ ] RSS TreatDefinition
-- [ ] Twitch TreatDefinition
-- [ ] Reddit TreatDefinition
-- [ ] GET /treatDefinition 
-
-For this milestone, the Treat Definitions can be hard-coded, either in the database, directly in the source code, or whatever.  
-
-- [ ] GET /treatDefinition/:idDefinition
-- [ ] GET /treat
+- [ ] RSS Parent Treat
+- [ ] Twitch Parent Treat
+- [ ] Reddit Parent Treat
 
 For this milestone, all treats will be globally accessible. Users and permissions will not exist for this milestone.
-
+- [ ] GET /treat 
 - [ ] POST /treat
 - [ ] GET /treat/:idTreat
 - [ ] GET /treat/:idTreat/items
