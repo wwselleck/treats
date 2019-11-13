@@ -149,15 +149,16 @@ A Treat is a source of TreatItems
   // A Treat can provide its own configOptions, and then be
   // used as the Parent of another Treat, which then provides
   // values for those config options.
-  idParent: String
-  parentConfig: {
-    [optionName: string]: JSONValue
+  idParent?: String
+  config: {
+    [optionName: String]: JSONValue
   },
-  configOptions: Array<{
-    id: String
-    name: String
-    type: String
-  }>
+  configOptions?: {
+    [optionName: String]: {
+      optionName: String
+      type: String
+    }
+  }
 }
 ```
 
@@ -179,8 +180,27 @@ A TreatItem is an item of content.
 **GET /treat**
 Get a list of all available Treats
 
+*Response*
+```
+[<Treat>]
+```
+
 **POST /treat**
 Create a Treat
+
+*Payload*
+```
+{
+  // For now, new Treats can only be created using a base Treat 
+  // that already exists locally. In the future, Treats may be able to be created
+  // using for instance a URL, that hits an HTTP server that serves TreatItems
+  idParent: String
+  config?: {
+    [optionName: String]: JSONValue
+  }
+}
+```
+
 
 **GET /treat/:idTreat**
 Get specific Treat
@@ -202,7 +222,8 @@ For this milestone, the base Parent Treats can be hard-coded, either in the data
 - [ ] Twitch Parent Treat
 - [ ] Reddit Parent Treat
 
-For this milestone, all treats will be globally accessible. Users and permissions will not exist for this milestone.
+For this milestone, all treats will be globally accessible. Users and permissions will not exist.
+
 - [ ] GET /treat 
 - [ ] POST /treat
 - [ ] GET /treat/:idTreat
