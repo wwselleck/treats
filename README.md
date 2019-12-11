@@ -132,33 +132,31 @@ This is something I'll write more about as I get closer to implementing a front-
 Language: Go
 Database: Mongo
 #### Models
-A TreatDefinition is a definition of a source for Treat Items. 
+##### TreatSource
+A TreatSource is a definition of a source for Treat Items. 
 ```
 {
   id: String 
   name: String
-
-}
-```
-
-##### Treat
-A Treat is a source of TreatItems
-```
-{
-  id: String
-  // A Treat can provide its own configOptions, and then be
-  // used as the Parent of another Treat, which then provides
-  // values for those config options.
-  idParent?: String
-  config: {
-    [optionName: String]: JSONValue
-  },
   configOptions?: {
     [optionName: String]: {
       optionName: String
       type: String
+      required: Boolean
     }
   }
+}
+```
+
+##### Treat
+A Treat is an "instance" of a TreatSource, providing the configuration necessary to the source
+```
+{
+  id: String
+  idSource?: String
+  config: {
+    [optionName: String]: JSONValue
+  },
 }
 ```
 
@@ -167,6 +165,8 @@ A TreatItem is an item of content.
 ```
 {
   id: String
+  // id of the Treat this item came from
+  idTreat: String
   title: String
   description?: String
   link?: String
@@ -218,12 +218,14 @@ Fetch the TreatItems for a Treat
 ### Milestone 1
 For this milestone, the base Parent Treats can be hard-coded, either in the database, directly in the source code, or whatever.  
 
-- [ ] RSS Parent Treat
-- [ ] Twitch Parent Treat
-- [ ] Reddit Parent Treat
+- [ ] RSS Treat Source
+- [ ] Twitch Treat Source
+- [ ] Reddit Treat Source
 
 For this milestone, all treats will be globally accessible. Users and permissions will not exist.
 
+- [ ] GET /treatsource
+- [ ] GET /treatsource/:idTreatSource
 - [ ] GET /treat 
 - [ ] POST /treat
 - [ ] GET /treat/:idTreat
