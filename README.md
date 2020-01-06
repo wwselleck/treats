@@ -230,5 +230,6 @@ For this milestone, all treats will be globally accessible. Users and permission
 - [ ] POST /treat
 - [ ] GET /treat/:idTreat
 - [ ] GET /treat/:idTreat/items
+- [ ] GET /treat/all/iteams
 
 
