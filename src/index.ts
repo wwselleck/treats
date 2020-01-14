@@ -1,12 +1,7 @@
-import express = require("express");
+import * as TreatsServer from "./treats_server";
 
 function startServer() {
-  const app = express();
-  app.get("/", (req: express.Request, res: express.Response) => {
-    res.json({ hello: "treats" });
-  });
-
-  app.listen(3000);
+  TreatsServer.start();
 }
 
 startServer();

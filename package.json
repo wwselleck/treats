@@ -8,7 +8,7 @@
     "clean": "rm -rf dist",
     "lint": "prettier \"src/**/*\"",
     "run": "node dist/index.ts",
-    "watch": "concurrently -k -p \"[{name}]\" -n \"TypeScript,Node\" -c \"cyan.bold,green.bold\" \"npm:watch:source\" \"npm:watch:server\"",
+    "watch": "npm run clean && concurrently -k -p \"[{name}]\" -n \"TypeScript,Node\" -c \"cyan.bold,green.bold\" \"npm:watch:source\" \"npm:watch:server\"",
     "watch:source": "tsc -w",
     "watch:server": "nodemon \"dist/index.js\"",
     "ping": "curl -X GET localhost:3000"
