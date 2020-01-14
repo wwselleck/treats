@@ -129,11 +129,14 @@ This is something I'll write more about as I get closer to implementing a front-
 ## Implemenation
 ### Server
 #### Technologies
-Language: Go
+Language: Typescript
+
 Database: Mongo
-#### Models
+
 ##### TreatSource
-A TreatSource is a definition of a source for Treat Items.
+A `TreatSource` is the combination of two things
+
+1. A TreatSourceDefinition, which is a source for Treat Items. This is what is returned from `treatsource` API endpoints.
 ```
 {
   id: String
@@ -147,6 +150,8 @@ A TreatSource is a definition of a source for Treat Items.
   }
 }
 ```
+
+2. A TreatSourceItemLoader, which loads TreatItems for a given TreatSourceDefinition
 
 ##### Treat
 A Treat is an "instance" of a TreatSource, providing the configuration necessary to the source
