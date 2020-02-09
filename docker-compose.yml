@@ -1,6 +1,9 @@
 version: '3'
 services:
   web:
+    environment:
+      - DB_URI=mongo
+      - DB_PORT=27017
     build: .
     command: npm run watch
     volumes:
@@ -11,5 +14,7 @@ services:
       - /usr/app/node_modules
     ports:
       - "3000:3000"
-
+  mongo:
+    container_name: mongo
+    image: mongo
 

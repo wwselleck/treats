@@ -1,22 +1,26 @@
 import express = require("express");
-import { ExampleTreatSource } from "../treat_source";
+import { TreatSourceRepo } from "../repos";
 
-const AvailableTreatSources = {
-  [ExampleTreatSource.id]: ExampleTreatSource
-};
+export function createTreatSourceRouter(treatSourceRepo: TreatSourceRepo) {
+  const TreatSourceRouter = express
+    .Router()
+    .get("/", async (_, res: express.Response) => {
+      const sources = Array.from(await treatSourceRepo.all());
+      res.json(sources);
+    })
+    .get(
+      "/:idTreatSource",
+      async (req: express.Request, res: express.Response) => {
+        const idTreatSource = req.param("idTreatSource");
+        const treatSource = await treatSourceRepo.get(idTreatSource);
+        console.log(treatSource);
+        if (!treatSource) {
+          res.status(404);
+          res.send();
+        }
+        res.json(treatSource);
+      }
+    );
 
-export const TreatSourceRouter = express
-  .Router()
-  .get("/", (_, res: express.Response) => {
-    res.json(Object.values(AvailableTreatSources));
-  })
-  .get("/:idTreatSource", (req: express.Request, res: express.Response) => {
-    const idTreatSource = req.param("idTreatSource");
-    const treatSource = AvailableTreatSources[idTreatSource];
-    if (!treatSource) {
-      res.status(404);
-      res.send();
-    }
-    res.json(treatSource);
-  });
-
+  return TreatSourceRouter;
+}
