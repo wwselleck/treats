@@ -1,13 +1,13 @@
 version: '3'
 services:
-  web:
+  treats_server:
     environment:
       - DB_URI=mongo
       - DB_PORT=27017
-    build: .
+    build: ./server
     command: npm run watch
     volumes:
-      - .:/usr/app/
+      - ./server:/usr/app/
       # Tells container to ignore the mounted node_modules on the host,
       # use the one installed in the container
       # https://jdlm.info/articles/2016/03/06/lessons-building-node-app-docker.html
