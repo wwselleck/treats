@@ -33,17 +33,20 @@ You can imagine what kinds of rules each of the other kinds of modules may use t
 ## Solution
 
 ### Treat
-Content is exposed via a Treat (hence the project name), which is just a logical grouping of content and associated configuration. Treats determine a set of Treat Items upon request, and then score those items to designate the importance of those items. Some examples of Treats may be...
+Content is exposed via a Treat (hence the project name), which is just a logical grouping of a source of content (see `TreatSource`) and associated configuration. Treats determine a set of Treat Items upon request, and then score those items to designate the importance of those items. 
 
-- An 'RSS' Treat, that allows you to subscribe to multiple RSS feeds. Some potential configuration options for determing score: Specifying certain RSS that are more important than the others, a keyword matcher that adjusts the score of RSS items whose text content matches a certain keyword
+### Treat Source
+Each `Treat` has a source of content items, called a `Treat Source`. Some examples of TreatSources may be...
 
-- A 'Trello' Treat, that exposes certain cards on your Trello boards as Treat items. You could configure the Treat to return cards on  your "To-Do" board that are overdue, or have recent comments on them. Or configure your "Albums I Want to Listen To" board to randomly give you an album to listen to every once in awhile.
+- An 'RSS' Treat Source, that allows you to subscribe to multiple RSS feeds. Some potential configuration options for determing score: Specifying certain RSS that are more important than the others, a keyword matcher that adjusts the score of RSS items whose text content matches a certain keyword
 
-- A 'Reddit' Treat, similar to the RSS feed in terms of configuration, but from Reddit instead of RSS.
+- A 'Trello' Treat Source, that exposes certain cards on your Trello boards as Treat items. You could configure the Treat to return cards on  your "To-Do" board that are overdue, or have recent comments on them. Or configure your "Albums I Want to Listen To" board to randomly give you an album to listen to every once in awhile.
 
-- A sports Treat, that posts sports scores and ongoing games as Treat items. You could configure it with your favorite teams, so that if your favorite teams were currently playing, it could create an item with a very high importance since you probably want to know about it if you don't already.
+- A 'Reddit' Treat Source, similar to the RSS feed in terms of configuration, but from Reddit instead of RSS.
 
-- A stocks Treat, configured with stocks you want to be alerted about, whose score is affected by the % change that day
+- A sports Treat Source, that posts sports scores and ongoing games as Treat items. You could configure it with your favorite teams, so that if your favorite teams were currently playing, it could create an item with a very high importance since you probably want to know about it if you don't already.
+
+- A stocks Treat Source, configured with stocks you want to be alerted about, whose score is affected by the % change that day
 
 ### Treat Item
 As mentioned before, Treats output a list of Treat Items, which are just individual items of content. They might be equivalent to an RSS item, or a sports score, or a Twitch stream, or a stock ticker, etc. They would contain some standard base information, like title, description, url, score, etc., and then possibly some Treat-specific info.
@@ -128,15 +131,7 @@ This is something I'll write more about as I get closer to implementing a front-
 
 ## Implemenation
 ### Server
-#### Technologies
-Language: Typescript
-
-Database: Mongo
-
-##### TreatSource
-A `TreatSource` is the combination of two things
-
-1. A TreatSourceDefinition, which is a source for Treat Items. This is what is returned from `treatsource` API endpoints.
+#### TreatSource
 ```
 {
   id: String
@@ -151,21 +146,19 @@ A `TreatSource` is the combination of two things
 }
 ```
 
-2. A TreatSourceItemLoader, which loads TreatItems for a given TreatSourceDefinition
-
-##### Treat
+#### Treat
 A Treat is an "instance" of a TreatSource, providing the configuration necessary to the source
 ```
 {
   id: String
-  idSource?: String
+  idTreatSource?: String
   config: {
-    [optionName: String]: JSONValue
+    [optionName: String]: string | number | Array<string>
   },
 }
 ```
 
-##### TreatItem
+#### TreatItem
 A TreatItem is an item of content.
 ```
 {
@@ -180,8 +173,8 @@ A TreatItem is an item of content.
 }
 ```
 
-#### API Endpoints
-##### Treats
+### API Endpoints
+#### Treats
 **GET /treat**
 Get a list of all available Treats
 
@@ -213,28 +206,33 @@ Get specific Treat
 **GET /treat/:idTreat/items**
 Fetch the TreatItems for a Treat
 
-##### User Management and Configuration
-**POST /user/:idUser**
 ### Client
 ## FAQ (frequently asked by me, to myself)
 
 ## Milestones
 
 ### Milestone 1
-For this milestone, the base Parent Treats can be hard-coded, either in the database, directly in the source code, or whatever.
+##### Server
+- [x] Example Treat Source
+Just a dummy, builtin Treat Source for testing purposes
 
+- [x] GET /treatsource
+- [x] GET /treatsource/:idTreatSource
+- [x] GET /treat
+- [x] POST /treat
+- [x] GET /treat/:idTreat
+- [x] GET /treat/:idTreat/items
+
+> For all of these endpoints, they only need to be functional when tested with the Example Treat Source.
+
+### Milestone 2
+##### CLI
+- [ ] Define API for CLI tool
+- [ ] ...
+
+### Milestone 3
+- [ ] GET /treat/all/items
 - [ ] RSS Treat Source
 - [ ] Twitch Treat Source
 - [ ] Reddit Treat Source
-
-For this milestone, all treats will be globally accessible. Users and permissions will not exist.
-
-- [ ] GET /treatsource
-- [ ] GET /treatsource/:idTreatSource
-- [ ] GET /treat
-- [ ] POST /treat
-- [ ] GET /treat/:idTreat
-- [ ] GET /treat/:idTreat/items
-- [ ] GET /treat/all/iteams
-
 
