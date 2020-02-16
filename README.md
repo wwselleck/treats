@@ -33,7 +33,7 @@ You can imagine what kinds of rules each of the other kinds of modules may use t
 ## Solution
 
 ### Treat
-Content is exposed via a Treat (hence the project name), which is just a logical grouping of a source of content (see `TreatSource`) and associated configuration. Treats determine a set of Treat Items upon request, and then score those items to designate the importance of those items. 
+Content is exposed via a Treat (hence the project name), which is just a logical grouping of a source of content (see `TreatSource`) and associated configuration. Treats determine a set of Treat Items upon request, and then score those items to designate the importance of those items.
 
 ### Treat Source
 Each `Treat` has a source of content items, called a `Treat Source`. Some examples of TreatSources may be...
@@ -206,7 +206,11 @@ Get specific Treat
 **GET /treat/:idTreat/items**
 Fetch the TreatItems for a Treat
 
-### Client
+### CLI
+[](./cli/README.md)
+
+### Web Client
+<tbd>
 ## FAQ (frequently asked by me, to myself)
 
 ## Milestones
@@ -227,8 +231,11 @@ Just a dummy, builtin Treat Source for testing purposes
 
 ### Milestone 2
 ##### CLI
-- [ ] Define API for CLI tool
-- [ ] ...
+- [x] Define MVP API for CLI tool
+- [ ] `treats items`
+- [ ] `treats items {idTreat}`
+- [ ] `treats create`
+- [ ] `treats list`
 
 ### Milestone 3
 - [ ] GET /treat/all/items
