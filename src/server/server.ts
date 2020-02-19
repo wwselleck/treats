@@ -1,7 +1,7 @@
 import express = require("express");
 import bodyParser = require("body-parser");
 
-import { TreatSourceRepo, TreatRepo } from "../repos";
+import { TreatSourceRepo, TreatRepo } from "./repos";
 import { createTreatSourceRouter } from "./treat_source_router";
 import { createTreatRouter } from "./treat_router";
 

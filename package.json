@@ -1,18 +1,18 @@
 {
-  "name": "typescript-node-starter",
+  "name": "@wwselleck/treats",
   "version": "1.0.0",
-  "main": "dist/index.js",
+  "main": "dist/server/index.js",
   "license": "MIT",
   "scripts": {
     "build": "tsc",
+    "build:watch": "tsc -w",
     "clean": "rm -rf dist",
+    "dev": "yarn clean && concurrently -k -p \"[{name}]\" -n \"TypeScript,Node\" -c \"cyan.bold,green.bold\" \"yarn build:watch\" \"yarn dev:server\"",
+    "dev:server": "nodemon \"dist/server/index.js\"",
     "lint": "prettier \"src/**/*\"",
     "mongo": "docker exec -it mongo mongo",
-    "run": "node dist/index.ts",
-    "watch": "npm run clean && concurrently -k -p \"[{name}]\" -n \"TypeScript,Node\" -c \"cyan.bold,green.bold\" \"npm:watch:source\" \"npm:watch:server\"",
-    "watch:source": "tsc -w",
-    "watch:server": "nodemon \"dist/index.js\"",
-    "ping": "curl -X GET localhost:3000"
+    "ping": "curl -X GET localhost:3000",
+    "start": "node dist/server/index.js"
   },
   "dependencies": {
     "@types/mongoose": "^5.5.43",

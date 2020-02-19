@@ -1,7 +1,7 @@
 import express = require("express");
-import { TreatSourceRepo } from "../repos";
-import { TreatRepo } from "../repos";
-import { loadItems } from "../services/treat_source";
+import { TreatSourceRepo } from "./repos";
+import { TreatRepo } from "./repos";
+import { loadItems } from "./services/treat_source";
 
 interface TreatRouterConfig {
   treatSourceRepo: TreatSourceRepo;
@@ -14,8 +14,9 @@ export function createTreatRouter({
 }: TreatRouterConfig) {
   const TreatSourceRouter = express
     .Router()
-    .get("/", (_, res: express.Response) => {
-      const treats = treatSourceRepo.all();
+    .get("/", async (_, res: express.Response) => {
+      const treats = await treatRepo.all();
+      console.log(treats);
       res.json(treats);
     })
     .post("/", async (req: express.Request, res: express.Response) => {

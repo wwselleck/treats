@@ -1,5 +1,5 @@
-import * as TreatsServer from "./treats_server";
 import path = require("path");
+import * as TreatsServer from "./server";
 import { connectToDB } from "./db";
 import { PluginTreatSourceRepo, MongoTreatRepo } from "./repos";
 

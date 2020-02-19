@@ -29,5 +29,3 @@ Create a new treat
 
 `treats list`
 List all available treats
-
-
