@@ -232,6 +232,7 @@ Just a dummy, builtin Treat Source for testing purposes
 ### Milestone 2
 ##### CLI
 - [x] Define MVP API for CLI tool
+- [ ] Server can be seeded using ~/.treats/treats_seed.json
 - [ ] `treats items`
 - [ ] `treats items {idTreat}`
 - [ ] `treats create`
