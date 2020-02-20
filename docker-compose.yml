@@ -22,7 +22,7 @@ services:
       - "3000:3000"
     volumes:
       - ./dist:/usr/app/dist
-      - ./dev/treats:/root/.treats
+      - ./dev/.treats:/root/.treats
       # Tells container to ignore the mounted node_modules on the host,
       # use the one installed in the container
       # https://jdlm.info/articles/2016/03/06/lessons-building-node-app-docker.html

@@ -30,7 +30,7 @@ export function createTreatRouter({
       const treat = await treatRepo.create({
         idTreatSource,
         name,
-        config: new Map(Object.entries(config))
+        config: config
       });
       res.json(treat);
     })

@@ -7,6 +7,7 @@ export interface TreatModel extends mongoose.Document {
 }
 
 const TreatSchema = new mongoose.Schema<TreatModel>({
+  _id: String,
   idTreatSource: String,
   name: String,
   config: {

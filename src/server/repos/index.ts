@@ -1,7 +1,6 @@
 export * from "./treat_source_repo";
 export * from "./treat_repo";
 
-import { WithOptional } from "../../types";
 import { Treat, TreatSource } from "../entity";
 
 export interface TreatSourceRepo {
@@ -9,7 +8,12 @@ export interface TreatSourceRepo {
   all(): Promise<Array<TreatSource>>;
 }
 
-export type TreatProps = WithOptional<Treat, "id">;
+export interface TreatProps {
+  id?: string;
+  idTreatSource: string;
+  name: string;
+  config: Record<string, any>;
+}
 
 export interface TreatRepo {
   get(id: string): Promise<Treat | null>;

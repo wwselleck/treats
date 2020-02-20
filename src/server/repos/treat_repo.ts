@@ -26,7 +26,10 @@ export class MongoTreatRepo implements TreatRepo {
   }
 
   async create(props: TreatProps) {
-    const treatModel = new this.options.db.Treat(props);
+    const treatModel = new this.options.db.Treat({
+      ...props,
+      _id: props.id
+    });
     treatModel.save();
     return Promise.resolve(treatModelToEntity(treatModel));
   }
