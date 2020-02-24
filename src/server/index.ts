@@ -11,7 +11,7 @@ async function startServer() {
   logger.info("Starting server with config", Config);
 
   const db = connectToDB(
-    `mongodb://${process.env.DB_URI}:${process.env.DB_PORT}/treats-dev`
+    `mongodb://${Config.DB_URI}:${Config.DB_PORT}/${Config.DB_NAME}`
   );
 
   const treatSourceRepo = new PluginTreatSourceRepo({
@@ -27,7 +27,7 @@ async function startServer() {
     treatRepo
   });
 
-  TreatsServer.start({ treatSourceRepo, treatRepo });
+  TreatsServer.start({ treatSourceRepo, treatRepo, port: Config.SERVER_PORT });
 }
 
 startServer();

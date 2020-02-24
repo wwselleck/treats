@@ -22,7 +22,8 @@ export class MongoTreatRepo implements TreatRepo {
   }
 
   async all() {
-    return [];
+    const treats = await this.options.db.Treat.find();
+    return treats.map(treatModelToEntity);
   }
 
   async create(props: TreatProps) {

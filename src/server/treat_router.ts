@@ -34,6 +34,7 @@ export function createTreatRouter({
       });
       res.json(treat);
     })
+    .get("/all", async (req: express.Request, res: express.Response) => {})
     .get("/:idTreat", async (req: express.Request, res: express.Response) => {
       const { idTreat } = req.params;
       const treat = await treatRepo.get(idTreat);
@@ -47,8 +48,6 @@ export function createTreatRouter({
     .get(
       "/:idTreat/items",
       async (req: express.Request, res: express.Response) => {
-        // get treat
-
         const { idTreat } = req.params;
         const treat = await treatRepo.get(idTreat);
         if (!treat) {

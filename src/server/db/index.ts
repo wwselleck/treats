@@ -1,6 +1,7 @@
 import mongoose = require("mongoose");
 
 export interface TreatModel extends mongoose.Document {
+  _id: string;
   idTreatSource: string;
   name: string;
   config: Map<string, any>;

@@ -19,7 +19,7 @@ services:
       - app_builder
     command: yarn dev:server
     ports:
-      - "3000:3000"
+      - "3218:3218"
     volumes:
       - ./dist:/usr/app/dist
       - ./dev/.treats:/root/.treats

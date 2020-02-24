@@ -10,12 +10,14 @@
     "dev": "yarn clean && concurrently -k -p \"[{name}]\" -n \"TypeScript,Node\" -c \"cyan.bold,green.bold\" \"yarn build:watch\" \"yarn dev:server\"",
     "dev:server": "nodemon \"dist/server/index.js\"",
     "lint": "prettier \"src/**/*\"",
-    "mongo": "docker exec -it mongo mongo",
-    "ping": "curl -X GET localhost:3000",
+    "mongo": "docker exec -it mongo mongo treats-dev",
+    "ping": "curl -X GET localhost:3218",
     "start": "node dist/server/index.js"
   },
   "dependencies": {
+    "axios": "^0.19.2",
     "body-parser": "^1.19.0",
+    "commander": "^4.1.1",
     "express": "^4.16.4",
     "express-pino-logger": "^4.0.0",
     "mongoose": "^5.8.10",

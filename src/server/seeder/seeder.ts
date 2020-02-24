@@ -45,3 +45,4 @@ export async function seedFromFile({ path, treatRepo }: SeedFromFileArgs) {
 function createTreatId(seedTreat: SeedTreat) {
   return `seed_${seedTreat.name}`;
 }
+
