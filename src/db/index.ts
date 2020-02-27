@@ -1,3 +1,6 @@
+export * from "./repos/treat_repo";
+export * from "./repos/treat_source_repo";
+
 import mongoose = require("mongoose");
 
 export interface TreatModel extends mongoose.Document {

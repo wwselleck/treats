@@ -1,22 +1,21 @@
 import express = require("express");
-import { TreatSourceRepo } from "./repos";
-import { TreatRepo } from "./repos";
-import { loadItems } from "./services/treat_source";
+import { TreatSourceRepo, TreatRepo, ItemLoader } from "../core";
 
 interface TreatRouterConfig {
   treatSourceRepo: TreatSourceRepo;
   treatRepo: TreatRepo;
+  itemLoader: ItemLoader;
 }
 
 export function createTreatRouter({
   treatSourceRepo,
-  treatRepo
+  treatRepo,
+  itemLoader
 }: TreatRouterConfig) {
   const TreatSourceRouter = express
     .Router()
     .get("/", async (_, res: express.Response) => {
       const treats = await treatRepo.all();
-      console.log(treats);
       res.json(treats);
     })
     .post("/", async (req: express.Request, res: express.Response) => {
@@ -56,15 +55,7 @@ export function createTreatRouter({
           return;
         }
 
-        const { idTreatSource } = treat;
-        const treatSource = await treatSourceRepo.get(idTreatSource);
-        if (!treatSource) {
-          res.status(404);
-          res.send();
-          return;
-        }
-
-        const items = await loadItems(treatSource);
+        const items = await itemLoader.load(treat);
         res.json(items);
       }
     );

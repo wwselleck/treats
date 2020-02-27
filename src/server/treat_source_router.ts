@@ -1,5 +1,5 @@
 import express = require("express");
-import { TreatSourceRepo } from "./repos";
+import { TreatSourceRepo } from "../core";
 
 export function createTreatSourceRouter(treatSourceRepo: TreatSourceRepo) {
   const TreatSourceRouter = express

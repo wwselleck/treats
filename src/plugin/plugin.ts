@@ -1,4 +1,23 @@
-import { Plugin, PluginTreatSource } from "../plugin";
+import {
+  TreatSource,
+  TreatSourceConfigOptions,
+  TreatSourceConfig
+} from "../core";
+
+export interface Plugin {
+  path: string;
+  TreatSource: PluginTreatSource;
+}
+
+export interface PluginModule {
+  TreatSource: PluginTreatSource;
+}
+
+export interface PluginTreatSource {
+  name: TreatSource["name"];
+  configOptions: TreatSourceConfigOptions;
+  loadItems(config?: TreatSourceConfig): Promise<any>;
+}
 
 export function loadPlugin(pluginPath: string): Plugin {
   try {
@@ -7,6 +26,7 @@ export function loadPlugin(pluginPath: string): Plugin {
       ...require(pluginPath)
     };
   } catch (e) {
+    console.log(e);
     throw new Error(`Error requiring plugin ${pluginPath} ${e}`);
   }
 }

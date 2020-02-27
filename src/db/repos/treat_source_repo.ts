@@ -1,12 +1,10 @@
 import util = require("util");
 import fs = require("fs");
 import path = require("path");
-import { TreatSourceRepo } from ".";
-import { PluginTreatSource, TreatSourceType } from "../entity";
-import { Plugin } from "../plugin";
-import * as PluginService from "../services/plugin";
+import { TreatSource, TreatSourceType, TreatSourceRepo } from "../../core";
+import { Plugin, loadPlugin, isPluginFileName } from "../../plugin";
 
-export function treatSourceFromPlugin(plugin: Plugin): PluginTreatSource {
+export function treatSourceFromPlugin(plugin: Plugin): TreatSource {
   return {
     id: path.basename(plugin.path, ".js"),
     name: plugin.TreatSource.name,
@@ -25,7 +23,7 @@ async function getPluginPathsFromDirectory(directoryPath: string) {
   }
 
   return possiblePluginFileNames
-    .filter(PluginService.isPluginFileName)
+    .filter(isPluginFileName)
     .map(f => path.resolve(directoryPath, f));
 }
 
@@ -55,9 +53,7 @@ export class PluginTreatSourceRepo implements TreatSourceRepo {
     for (let pluginPath of pluginPaths) {
       const fileName = path.basename(pluginPath, ".js");
       if (fileName === id) {
-        return Promise.resolve(
-          treatSourceFromPlugin(PluginService.loadPlugin(pluginPath))
-        );
+        return Promise.resolve(treatSourceFromPlugin(loadPlugin(pluginPath)));
       }
     }
     return null;
@@ -67,7 +63,7 @@ export class PluginTreatSourceRepo implements TreatSourceRepo {
     const pluginPaths = await getPluginPathsFromDirectories(
       this.options.moduleDirectories
     );
-    let plugins = pluginPaths.map(PluginService.loadPlugin);
+    let plugins = pluginPaths.map(loadPlugin);
     return plugins.map(treatSourceFromPlugin);
   }
 }

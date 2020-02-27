@@ -1,5 +1,5 @@
 import path = require("path");
-import { Config } from "../../config";
+import { Config } from "../config";
 
 export function getPaths() {
   return {

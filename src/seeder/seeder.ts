@@ -1,7 +1,7 @@
 import fs = require("fs");
 import util = require("util");
-import { logger } from "../../logger";
-import { TreatRepo } from "../repos";
+import { TreatRepo } from "../core";
+import { logger } from "../logger";
 import { SeedData, SeedTreat } from "./models";
 
 interface SeedArgs {

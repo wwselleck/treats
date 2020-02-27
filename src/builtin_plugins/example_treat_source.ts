@@ -1,16 +1,9 @@
-import { TreatSourceConfigOptionType } from "../entity";
+import { TreatSourceConfigOptionType } from "../core";
 
 export default class ExampleTreatSourcePlugin {
   static definition = {
     id: "example",
-    name: "Example Treat Source",
-    configOptions: {
-      exclude_c: {
-        optionName: "exclude_c",
-        optionType: TreatSourceConfigOptionType.String,
-        isRequired: false
-      }
-    }
+    name: "Example Treat Source Plugin"
   };
 
   static create() {
@@ -56,7 +49,7 @@ export default class ExampleTreatSourcePlugin {
 }
 
 export const TreatSource = {
-  name: "ExampleTreatSourcePlugin",
+  name: "ExampleTreatSource",
   configOptions: {
     exclude_c: {
       optionName: "exclude_c",

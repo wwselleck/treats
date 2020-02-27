@@ -1,12 +1,4 @@
-export * from "./treat_source_repo";
-export * from "./treat_repo";
-
-import { Treat, TreatSource } from "../entity";
-
-export interface TreatSourceRepo {
-  get(id: string): Promise<TreatSource | null>;
-  all(): Promise<Array<TreatSource>>;
-}
+import { Treat } from ".";
 
 export interface TreatProps {
   id?: string;

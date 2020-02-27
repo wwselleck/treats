@@ -1,5 +1,17 @@
+export interface TreatSourceItem {
+  id: string;
+  idTreatSource: string;
+  title: string;
+  description?: string;
+  link?: string;
+}
+
 export enum TreatSourceType {
   Plugin = "plugin"
+}
+
+export interface TreatSourceConfig {
+  [optionName: string]: string | number | Array<string>;
 }
 
 export type TreatSourceConfigOptions = {
@@ -12,7 +24,7 @@ export interface TreatSourceConfigOption {
   isRequired: boolean;
 }
 
-export const enum TreatSourceConfigOptionType {
+export enum TreatSourceConfigOptionType {
   String = "String"
 }
 
@@ -28,4 +40,3 @@ export interface PluginTreatSource extends BaseTreatSource {
 }
 
 export type TreatSource = PluginTreatSource;
-
