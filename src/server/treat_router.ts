@@ -1,16 +1,17 @@
 import express = require("express");
-import { TreatSourceRepo, TreatRepo, ItemLoader } from "../core";
+import { TreatSourceRepo, TreatRepo } from "../core";
+import { TreatItemLoader } from "../item_loader";
 
 interface TreatRouterConfig {
   treatSourceRepo: TreatSourceRepo;
   treatRepo: TreatRepo;
-  itemLoader: ItemLoader;
+  treatItemLoader: TreatItemLoader;
 }
 
 export function createTreatRouter({
   treatSourceRepo,
   treatRepo,
-  itemLoader
+  treatItemLoader: itemLoader
 }: TreatRouterConfig) {
   const TreatSourceRouter = express
     .Router()

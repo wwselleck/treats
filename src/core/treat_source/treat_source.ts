@@ -4,6 +4,7 @@ export interface TreatSourceItem {
   title: string;
   description?: string;
   link?: string;
+  score: number;
 }
 
 export enum TreatSourceType {

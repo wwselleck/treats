@@ -1,9 +1,28 @@
+import { loadPluginTreatSource } from "../../plugin";
 import { Treat, TreatItem } from "../treat";
 import {
   TreatSource,
+  TreatSourceType,
+  PluginTreatSource,
   TreatSourceItem,
   TreatSourceConfig
 } from "../treat_source";
+
+export class TreatItemLoader {
+  async load(treat: Treat): Promise<Array<TreatItem>> {
+    const { treatSource, config } = treat;
+
+    if (treatSource.type === TreatSourceType.Plugin) {
+      let treatSourceItems = await loadItemsFromPluginTreatSource(
+        treatSource,
+        config
+      );
+      return treatSourceItems.map(i => treatItemFromTreatSourceItem(treat, i));
+    } else {
+      throw new Error();
+    }
+  }
+}
 
 function treatItemFromTreatSourceItem(
   treat: Treat,
@@ -14,25 +33,15 @@ function treatItemFromTreatSourceItem(
     idTreat: treat.id
   };
 }
-export interface TreatSourceItemLoader {
-  load(
-    treatSource: TreatSource,
-    config: TreatSourceConfig
-  ): Promise<Array<TreatSourceItem>>;
-}
 
-export class ItemLoader {
-  treatSourceItemLoader: TreatSourceItemLoader;
+export async function loadItemsFromPluginTreatSource(
+  treatSource: PluginTreatSource,
+  config?: TreatSourceConfig
+): Promise<Array<TreatSourceItem>> {
+  const { pluginPath } = treatSource;
 
-  constructor(treatSourceItemLoader: TreatSourceItemLoader) {
-    this.treatSourceItemLoader = treatSourceItemLoader;
-  }
+  const pluginTreatSource = loadPluginTreatSource(pluginPath);
 
-  async load(treat: Treat): Promise<Array<TreatItem>> {
-    const { treatSource, config } = treat;
-    const items = await this.treatSourceItemLoader.load(treatSource, config);
-    return items.map(treatSourceItem =>
-      treatItemFromTreatSourceItem(treat, treatSourceItem)
-    );
-  }
+  const items = await pluginTreatSource.loadItems(config);
+  return items;
 }

@@ -1,25 +1,13 @@
 import {
   TreatSource,
   TreatSourceType,
+  TreatSourceItem,
   TreatSourceConfig,
-  TreatSourceItemLoader,
   PluginTreatSource
 } from "../core";
 import { loadPluginTreatSource } from "../plugin";
 
-export async function loadItemsFromPluginTreatSource(
-  treatSource: PluginTreatSource,
-  config?: TreatSourceConfig
-) {
-  const { pluginPath } = treatSource;
-
-  const pluginTreatSource = loadPluginTreatSource(pluginPath);
-
-  const items = await pluginTreatSource.loadItems(config);
-  return items;
-}
-
-export class BasicTreatSourceItemLoader implements TreatSourceItemLoader {
+export class TreatSourceItemLoader {
   load(treatSource: TreatSource, config: TreatSourceConfig) {
     if (treatSource.type === TreatSourceType.Plugin) {
       return loadItemsFromPluginTreatSource(treatSource, config);
@@ -27,4 +15,16 @@ export class BasicTreatSourceItemLoader implements TreatSourceItemLoader {
       throw new Error();
     }
   }
+}
+
+export async function loadItemsFromPluginTreatSource(
+  treatSource: PluginTreatSource,
+  config?: TreatSourceConfig
+): Promise<Array<TreatSourceItem>> {
+  const { pluginPath } = treatSource;
+
+  const pluginTreatSource = loadPluginTreatSource(pluginPath);
+
+  const items = await pluginTreatSource.loadItems(config);
+  return items;
 }

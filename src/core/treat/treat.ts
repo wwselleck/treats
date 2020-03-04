@@ -14,4 +14,5 @@ export interface TreatItem {
   title: string;
   description?: string;
   link?: string;
+  score: number;
 }
