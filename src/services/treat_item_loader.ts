@@ -2,11 +2,10 @@ import { Treat, TreatItem, TreatSourceItem } from "../core";
 import { TreatSourceItemLoader } from "./treat_source_item_loader";
 
 export class TreatItemLoader {
-  async load(treat: Treat): Promise<Array<TreatItem>> {
+  static async load(treat: Treat): Promise<Array<TreatItem>> {
     const { treatSource, config } = treat;
 
-    const treatSourceItemLoader = new TreatSourceItemLoader();
-    let treatSourceItems = await treatSourceItemLoader.load(
+    let treatSourceItems = await TreatSourceItemLoader.load(
       treatSource,
       config
     );

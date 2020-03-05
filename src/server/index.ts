@@ -1,7 +1,6 @@
 import path = require("path");
 import { logger } from "../logger";
 import { Config } from "../config";
-import { TreatItemLoader } from "../item_loader";
 import { connectToDB, MongoTreatRepo, PluginTreatSourceRepo } from "../db";
 import * as TreatsServer from "./server";
 import * as Seeder from "../seeder";
@@ -23,8 +22,6 @@ async function startServer() {
     treatSourceRepo
   });
 
-  const treatItemLoader = new TreatItemLoader();
-
   await Seeder.seedFromFile({
     path: UserData.getPaths().seed,
     treatRepo
@@ -33,7 +30,6 @@ async function startServer() {
   TreatsServer.start({
     treatSourceRepo,
     treatRepo,
-    treatItemLoader,
     port: Config.SERVER_PORT
   });
 }

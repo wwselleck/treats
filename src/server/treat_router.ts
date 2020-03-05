@@ -1,23 +1,22 @@
 import express = require("express");
 import { TreatSourceRepo, TreatRepo } from "../core";
-import { TreatItemLoader } from "../item_loader";
+import { TreatItemLoader } from "../services";
+import { serializeTreat } from "./serialize";
 
 interface TreatRouterConfig {
   treatSourceRepo: TreatSourceRepo;
   treatRepo: TreatRepo;
-  treatItemLoader: TreatItemLoader;
 }
 
 export function createTreatRouter({
   treatSourceRepo,
-  treatRepo,
-  treatItemLoader: itemLoader
+  treatRepo
 }: TreatRouterConfig) {
   const TreatSourceRouter = express
     .Router()
     .get("/", async (_, res: express.Response) => {
       const treats = await treatRepo.all();
-      res.json(treats);
+      res.json(treats.map(serializeTreat));
     })
     .post("/", async (req: express.Request, res: express.Response) => {
       const { idTreatSource, name, config } = req.body;
@@ -32,9 +31,12 @@ export function createTreatRouter({
         name,
         config: config
       });
-      res.json(treat);
+      res.json(serializeTreat(treat));
     })
-    .get("/all", async (req: express.Request, res: express.Response) => {})
+    .get(
+      "/all/items",
+      async (req: express.Request, res: express.Response) => {}
+    )
     .get("/:idTreat", async (req: express.Request, res: express.Response) => {
       const { idTreat } = req.params;
       const treat = await treatRepo.get(idTreat);
@@ -56,7 +58,7 @@ export function createTreatRouter({
           return;
         }
 
-        const items = await itemLoader.load(treat);
+        const items = await TreatItemLoader.load(treat);
         res.json(items);
       }
     );

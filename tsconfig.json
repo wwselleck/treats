@@ -6,6 +6,7 @@
     "strict": true,
     "target": "es6",
     "outDir": "dist",
-    "sourceMap": true
+    "sourceMap": true,
+    "esModuleInterop": true
   }
 }

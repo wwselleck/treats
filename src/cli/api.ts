@@ -7,7 +7,6 @@ export class TreatsAPI {
   axiosClient: AxiosInstance;
 
   constructor() {
-    console.log(this.origin);
     this.axiosClient = axios.create({
       baseURL: this.origin,
       responseType: "json"
@@ -16,15 +15,13 @@ export class TreatsAPI {
 
   async getTreats() {
     const path = `/treat`;
-    const response = await this.axiosClient.get("/treat");
-    console.log("toots");
-    console.log(response.data);
+    const response = await this.axiosClient.get(path);
+    return response.data;
   }
 
   async getItems(idTreat: string) {
-    console.log(this.origin);
     const path = `/treat/${idTreat}/items`;
     const response = await this.axiosClient.get(path);
-    console.log(response.data);
+    return response.data;
   }
 }
