@@ -26,6 +26,7 @@ const TreatTable = {
     for (const treat of treats) {
       table.push([treat.id, treat.name, JSON.stringify(treat.config)]);
     }
+    return table.toString();
   }
 };
 
@@ -99,7 +100,7 @@ const TreatConfigPrompt = {
 
 const ItemsCommand = {
   register(program: commander.Command) {
-    program.command("items <idTreat>").action(async idTreat => {
+    program.command("items [idTreat]").action(async idTreat => {
       const items = await new TreatsAPI().getItems(idTreat);
       console.log(TreatItemTable.toString(items));
     });

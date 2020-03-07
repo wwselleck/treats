@@ -230,16 +230,20 @@ Just a dummy, builtin Treat Source for testing purposes
 > For all of these endpoints, they only need to be functional when tested with the Example Treat Source.
 
 ### Milestone 2
+##### Server
+- [ ] GET /treat/all/items
+
 ##### CLI
 - [x] Define MVP API for CLI tool
 - [x] Server can be seeded using ~/.treats/treats_seed.json
 - [ ] `treats items`
 - [ ] `treats items {idTreat}`
-- [ ] `treats create`
-- [ ] `treats list`
+- [x] `treats create`
+- [x] `treats list`
+
+> Once again, everything only needs to be functional when tested with the Example Treat Source.
 
 ### Milestone 3
-- [ ] GET /treat/all/items
 - [ ] RSS Treat Source
 - [ ] Twitch Treat Source
 - [ ] Reddit Treat Source

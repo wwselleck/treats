@@ -1,6 +1,7 @@
 import { ok, error, isOk, isError } from "../types/result";
 import {
   Treat,
+  TreatProps,
   TreatService,
   TreatSourceService,
   NotFoundError
@@ -9,7 +10,7 @@ import { logger } from "../logger";
 import { UserData, UserTreat } from ".";
 
 function createTreatId(userTreat: UserTreat) {
-  return `seed_${userTreat.name}`;
+  return `local_${userTreat.name}`;
 }
 
 async function mapUserTreatToTreat(
@@ -26,7 +27,9 @@ async function mapUserTreatToTreat(
     treatSource
   });
 }
+
 export class UserDataTreatService implements TreatService {
+  static TreatsFileName: string = "treats.json";
   constructor(private treatSourceService: TreatSourceService) {}
 
   async get(id: string) {
@@ -43,7 +46,9 @@ export class UserDataTreatService implements TreatService {
   }
 
   async all() {
-    const userTreats = await UserData.readTreats();
+    const userTreats = (
+      await UserData.readJSON(UserDataTreatService.TreatsFileName)
+    ).treats;
     const treats: Array<Treat> = [];
     for (const ut of userTreats) {
       const treat = await mapUserTreatToTreat(ut, this.treatSourceService);
@@ -56,11 +61,27 @@ export class UserDataTreatService implements TreatService {
     return ok(treats);
   }
 
-  create() {
-    return Promise.resolve(
-      error(
-        new Error("Create operation not supported for UserDataTreatService")
-      )
+  async create(treatProps: TreatProps) {
+    const userTreats = await UserData.readJSON(
+      UserDataTreatService.TreatsFileName
     );
+
+    const newData = {
+      ...userTreats,
+      treats: [...userTreats.treats, treatProps]
+    };
+
+    const treat = await mapUserTreatToTreat(
+      treatProps,
+      this.treatSourceService
+    );
+
+    if (isError(treat)) {
+      return treat;
+    }
+
+    UserData.writeJSON(UserDataTreatService.TreatsFileName, newData);
+
+    return ok(treat.value);
   }
 }

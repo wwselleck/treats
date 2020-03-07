@@ -5,7 +5,7 @@ import {
   TreatService,
   NotFoundError
 } from "../packages/core";
-import { TreatItemLoader } from "../packages/services";
+import { TreatItemLoader } from "../packages/item_loader";
 import { serializeTreat } from "./serialize";
 import { ExpressResponseHelper } from "./express_helper";
 
@@ -47,10 +47,22 @@ export function createTreatRouter({
         return;
       }
     })
-    .get(
-      "/all/items",
-      async (req: express.Request, res: express.Response) => {}
-    )
+    .get("/all/items", async (req: express.Request, res: express.Response) => {
+      const treats = await treatService.all();
+      if (isError(treats)) {
+        ExpressResponseHelper.InternalServerError(res);
+        return;
+      }
+
+      const items = await TreatItemLoader.loadAll(treats.value);
+
+      if (isError(items)) {
+        ExpressResponseHelper.InternalServerError(res);
+        return;
+      }
+
+      res.json(items.value);
+    })
     .get("/:idTreat", async (req: express.Request, res: express.Response) => {
       const { idTreat } = req.params;
       const treat = await treatService.get(idTreat);

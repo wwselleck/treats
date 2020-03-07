@@ -20,14 +20,14 @@ export interface UserTreatData {
 }
 
 export class UserData {
-  static TreatsFileName: string = "treats.json";
-
   static async readJSON(filePath: string) {
     const path = absolutePath(filePath);
     return JSON.parse(await util.promisify(fs.readFile)(path, "utf-8"));
   }
 
-  static async readTreats(): Promise<Array<UserTreat>> {
-    return (await UserData.readJSON(UserData.TreatsFileName)).treats;
+  static async writeJSON(filePath: string, obj: any) {
+    const path = absolutePath(filePath);
+    const data = JSON.stringify(obj, null, 2);
+    return util.promisify(fs.writeFile)(path, data);
   }
 }

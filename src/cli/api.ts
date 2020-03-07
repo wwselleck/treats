@@ -31,7 +31,7 @@ export class TreatsAPI {
     return response.data;
   }
 
-  async getItems(idTreat: string): Promise<Array<SerializedTreatItem>> {
+  async getItems(idTreat: string = "all"): Promise<Array<SerializedTreatItem>> {
     const path = `/treat/${idTreat}/items`;
     const response = await this.axiosClient.get(path);
     return response.data;
