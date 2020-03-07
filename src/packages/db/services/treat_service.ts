@@ -1,8 +1,10 @@
+import { ok, error } from "../../types/result";
 import {
   Treat,
   TreatService,
   TreatProps,
-  TreatSourceService
+  TreatSourceService,
+  NotFoundError
 } from "../../core";
 import { DB, TreatModel } from "..";
 
@@ -20,17 +22,19 @@ export class MongoTreatService implements TreatService {
     });
 
     if (!treat) {
-      return null;
+      return error(new NotFoundError());
     }
 
-    return treatModelToEntity(treat, this.options.treatSourceService);
+    return ok(await treatModelToEntity(treat, this.options.treatSourceService));
   }
 
   async all() {
     const treats = await this.options.db.Treat.find();
-    return Promise.all(
-      treats.map(treat =>
-        treatModelToEntity(treat, this.options.treatSourceService)
+    return ok(
+      await Promise.all(
+        treats.map(treat =>
+          treatModelToEntity(treat, this.options.treatSourceService)
+        )
       )
     );
   }
@@ -42,7 +46,9 @@ export class MongoTreatService implements TreatService {
     }
     const treatModel = new this.options.db.Treat(treat);
     treatModel.save();
-    return treatModelToEntity(treatModel, this.options.treatSourceService);
+    return ok(
+      await treatModelToEntity(treatModel, this.options.treatSourceService)
+    );
   }
 }
 

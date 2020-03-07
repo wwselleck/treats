@@ -1,3 +1,4 @@
+import { Result } from "../../types/result";
 import { Treat } from "./treat";
 
 export interface TreatProps {
@@ -8,7 +9,7 @@ export interface TreatProps {
 }
 
 export interface TreatService {
-  get(id: string): Promise<Treat | null>;
-  all(): Promise<Array<Treat>>;
-  create(props: TreatProps): Promise<Treat>;
+  get(id: string): Promise<Result<Treat>>;
+  all(): Promise<Result<Array<Treat>>>;
+  create(props: TreatProps): Promise<Result<Treat>>;
 }

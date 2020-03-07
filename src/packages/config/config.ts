@@ -2,6 +2,7 @@ import path = require("path");
 import os = require("os");
 
 export const Config = {
+  LOCAL_MODE: process.env.LOCAL_MODE || true,
   SERVER_PORT: 3218,
   DB_URI: process.env.DB_URI,
   DB_PORT: process.env.DB_PORT || 27017,

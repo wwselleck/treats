@@ -1,7 +1,13 @@
 import express = require("express");
-import { TreatSourceService, TreatService } from "../packages/core";
+import { isOk, isError } from "../packages/types/result";
+import {
+  TreatSourceService,
+  TreatService,
+  NotFoundError
+} from "../packages/core";
 import { TreatItemLoader } from "../packages/services";
 import { serializeTreat } from "./serialize";
+import { ExpressResponseHelper } from "./express_helper";
 
 interface TreatRouterConfig {
   treatSourceService: TreatSourceService;
@@ -16,7 +22,10 @@ export function createTreatRouter({
     .Router()
     .get("/", async (_, res: express.Response) => {
       const treats = await treatService.all();
-      res.json(treats.map(serializeTreat));
+      if (isOk(treats)) {
+        res.json(treats.value.map(serializeTreat));
+        return;
+      }
     })
     .post("/", async (req: express.Request, res: express.Response) => {
       const { idTreatSource, name, config } = req.body;
@@ -31,7 +40,12 @@ export function createTreatRouter({
         name,
         config: config
       });
-      res.json(serializeTreat(treat));
+      if (isOk(treat)) {
+        res.json(serializeTreat(treat.value));
+      } else {
+        ExpressResponseHelper.InternalServerError(res);
+        return;
+      }
     })
     .get(
       "/all/items",
@@ -40,25 +54,27 @@ export function createTreatRouter({
     .get("/:idTreat", async (req: express.Request, res: express.Response) => {
       const { idTreat } = req.params;
       const treat = await treatService.get(idTreat);
-      if (!treat) {
-        res.status(404);
-        res.send();
+      if (isError(treat)) {
+        if (treat.error instanceof NotFoundError) {
+          res.status(404);
+          res.send();
+          return;
+        }
+        ExpressResponseHelper.InternalServerError(res);
         return;
       }
-      res.json(treat);
+      res.json(treat.value);
     })
     .get(
       "/:idTreat/items",
       async (req: express.Request, res: express.Response) => {
         const { idTreat } = req.params;
         const treat = await treatService.get(idTreat);
-        if (!treat) {
-          res.status(404);
-          res.send();
+        if (isError(treat)) {
+          ExpressResponseHelper.InternalServerError(res);
           return;
         }
-
-        const items = await TreatItemLoader.load(treat);
+        const items = await TreatItemLoader.load(treat.value);
         res.json(items);
       }
     );
