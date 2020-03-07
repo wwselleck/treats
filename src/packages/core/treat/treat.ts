@@ -1,10 +1,11 @@
 import { TreatSource } from "../treat_source";
 
+export type TreatConfig = Record<string, any>;
 export interface Treat {
   id: string;
   idTreatSource: string;
   name: string;
-  config: Record<string, any>;
+  config: TreatConfig;
   treatSource: TreatSource;
 }
 

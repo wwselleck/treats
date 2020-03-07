@@ -26,7 +26,8 @@ export interface TreatSourceConfigOption {
 }
 
 export enum TreatSourceConfigOptionType {
-  String = "String"
+  String = "String",
+  Boolean = "Boolean"
 }
 
 export interface BaseTreatSource {

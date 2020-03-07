@@ -1,19 +1,20 @@
 import express = require("express");
-import { TreatSourceRepo } from "../core";
+import { TreatSourceService } from "../packages/core";
 
-export function createTreatSourceRouter(treatSourceRepo: TreatSourceRepo) {
+export function createTreatSourceRouter(
+  treatSourceService: TreatSourceService
+) {
   const TreatSourceRouter = express
     .Router()
     .get("/", async (_, res: express.Response) => {
-      const sources = Array.from(await treatSourceRepo.all());
+      const sources = Array.from(await treatSourceService.all());
       res.json(sources);
     })
     .get(
       "/:idTreatSource",
       async (req: express.Request, res: express.Response) => {
         const idTreatSource = req.param("idTreatSource");
-        const treatSource = await treatSourceRepo.get(idTreatSource);
-        console.log(treatSource);
+        const treatSource = await treatSourceService.get(idTreatSource);
         if (!treatSource) {
           res.status(404);
           res.send();

@@ -1,10 +1,16 @@
+export * from "./serialize";
+
 import path = require("path");
-import { logger } from "../logger";
-import { Config } from "../config";
-import { connectToDB, MongoTreatRepo, PluginTreatSourceRepo } from "../db";
+import { logger } from "../packages/logger";
+import { Config } from "../packages/config";
+import {
+  connectToDB,
+  MongoTreatService,
+  PluginTreatSourceService
+} from "../packages/db";
 import * as TreatsServer from "./server";
-import * as Seeder from "../seeder";
-import * as UserData from "../user_data";
+import * as Seeder from "../packages/seeder";
+import { UserData } from "../packages/user_data";
 
 async function startServer() {
   logger.info("Starting server with config", Config);
@@ -13,23 +19,23 @@ async function startServer() {
     `mongodb://${Config.DB_URI}:${Config.DB_PORT}/${Config.DB_NAME}`
   );
 
-  const treatSourceRepo = new PluginTreatSourceRepo({
-    moduleDirectories: [path.resolve(__dirname, "../builtin_plugins")]
+  const treatSourceService = new PluginTreatSourceService({
+    moduleDirectories: [path.resolve(__dirname, "../packages/builtin_plugins")]
   });
 
-  const treatRepo = new MongoTreatRepo({
+  const treatService = new MongoTreatService({
     db,
-    treatSourceRepo
+    treatSourceService
   });
 
-  await Seeder.seedFromFile({
-    path: UserData.getPaths().seed,
-    treatRepo
+  await Seeder.seed({
+    data: JSON.parse(await UserData.readFile(Config.SEED_FILE_NAME)),
+    treatService
   });
 
   TreatsServer.start({
-    treatSourceRepo,
-    treatRepo,
+    treatSourceService,
+    treatService,
     port: Config.SERVER_PORT
   });
 }

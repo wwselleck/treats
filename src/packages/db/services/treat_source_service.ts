@@ -1,7 +1,7 @@
 import util = require("util");
 import fs = require("fs");
 import path = require("path");
-import { TreatSource, TreatSourceType, TreatSourceRepo } from "../../core";
+import { TreatSource, TreatSourceType, TreatSourceService } from "../../core";
 import { Plugin, loadPlugin, isPluginFileName } from "../../plugin";
 
 export function treatSourceFromPlugin(plugin: Plugin): TreatSource {
@@ -36,13 +36,13 @@ async function getPluginPathsFromDirectories(directoryPaths: Array<string>) {
   return pluginPaths;
 }
 
-interface PluginTreatSourceRepoOptions {
+interface PluginTreatSourceServiceOptions {
   moduleDirectories: Array<string>;
 }
 
-export class PluginTreatSourceRepo implements TreatSourceRepo {
-  options: PluginTreatSourceRepoOptions;
-  constructor(options: PluginTreatSourceRepoOptions) {
+export class PluginTreatSourceService implements TreatSourceService {
+  options: PluginTreatSourceServiceOptions;
+  constructor(options: PluginTreatSourceServiceOptions) {
     this.options = options;
   }
 

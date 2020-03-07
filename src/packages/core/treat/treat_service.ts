@@ -1,4 +1,4 @@
-import { Treat } from ".";
+import { Treat } from "./treat";
 
 export interface TreatProps {
   id?: string;
@@ -7,7 +7,7 @@ export interface TreatProps {
   config: Record<string, any>;
 }
 
-export interface TreatRepo {
+export interface TreatService {
   get(id: string): Promise<Treat | null>;
   all(): Promise<Array<Treat>>;
   create(props: TreatProps): Promise<Treat>;

@@ -2,14 +2,14 @@ import express = require("express");
 import bodyParser = require("body-parser");
 import pino = require("express-pino-logger");
 
-import { TreatSourceRepo, TreatRepo } from "../core";
+import { TreatSourceService, TreatService } from "../packages/core";
 import { createTreatSourceRouter } from "./treat_source_router";
 import { createTreatRouter } from "./treat_router";
 
 interface TreatsServerConfig {
   port?: number;
-  treatSourceRepo: TreatSourceRepo;
-  treatRepo: TreatRepo;
+  treatSourceService: TreatSourceService;
+  treatService: TreatService;
 }
 
 /**
@@ -18,7 +18,7 @@ interface TreatsServerConfig {
  * caller
  */
 export async function start(config: TreatsServerConfig) {
-  const { treatSourceRepo, treatRepo, port = 3218 } = config;
+  const { treatSourceService, treatService, port = 3218 } = config;
 
   const app = express();
 
@@ -26,8 +26,8 @@ export async function start(config: TreatsServerConfig) {
 
   app.use(bodyParser());
 
-  app.use("/treatsource", createTreatSourceRouter(treatSourceRepo));
-  app.use("/treat", createTreatRouter({ treatSourceRepo, treatRepo }));
+  app.use("/treatsource", createTreatSourceRouter(treatSourceService));
+  app.use("/treat", createTreatRouter({ treatSourceService, treatService }));
 
   app.listen(port);
 }

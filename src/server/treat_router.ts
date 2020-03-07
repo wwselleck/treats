@@ -1,32 +1,32 @@
 import express = require("express");
-import { TreatSourceRepo, TreatRepo } from "../core";
-import { TreatItemLoader } from "../services";
+import { TreatSourceService, TreatService } from "../packages/core";
+import { TreatItemLoader } from "../packages/services";
 import { serializeTreat } from "./serialize";
 
 interface TreatRouterConfig {
-  treatSourceRepo: TreatSourceRepo;
-  treatRepo: TreatRepo;
+  treatSourceService: TreatSourceService;
+  treatService: TreatService;
 }
 
 export function createTreatRouter({
-  treatSourceRepo,
-  treatRepo
+  treatSourceService,
+  treatService
 }: TreatRouterConfig) {
   const TreatSourceRouter = express
     .Router()
     .get("/", async (_, res: express.Response) => {
-      const treats = await treatRepo.all();
+      const treats = await treatService.all();
       res.json(treats.map(serializeTreat));
     })
     .post("/", async (req: express.Request, res: express.Response) => {
       const { idTreatSource, name, config } = req.body;
-      const treatSource = await treatSourceRepo.get(idTreatSource);
+      const treatSource = await treatSourceService.get(idTreatSource);
       if (!treatSource) {
         res.status(404);
         res.send();
         return;
       }
-      const treat = await treatRepo.create({
+      const treat = await treatService.create({
         idTreatSource,
         name,
         config: config
@@ -39,7 +39,7 @@ export function createTreatRouter({
     )
     .get("/:idTreat", async (req: express.Request, res: express.Response) => {
       const { idTreat } = req.params;
-      const treat = await treatRepo.get(idTreat);
+      const treat = await treatService.get(idTreat);
       if (!treat) {
         res.status(404);
         res.send();
@@ -51,7 +51,7 @@ export function createTreatRouter({
       "/:idTreat/items",
       async (req: express.Request, res: express.Response) => {
         const { idTreat } = req.params;
-        const treat = await treatRepo.get(idTreat);
+        const treat = await treatService.get(idTreat);
         if (!treat) {
           res.status(404);
           res.send();

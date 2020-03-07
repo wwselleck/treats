@@ -1,10 +1,9 @@
-export * from "./repos/treat_repo";
-export * from "./repos/treat_source_repo";
+export * from "./services/treat_service";
+export * from "./services/treat_source_service";
 
 import mongoose = require("mongoose");
 
 export interface TreatModel extends mongoose.Document {
-  _id: string;
   idTreatSource: string;
   name: string;
   config: Map<string, any>;
@@ -30,3 +29,8 @@ export const connectToDB = (uri: string): DB => {
     Treat: connection.model<TreatModel>("Treat", TreatSchema)
   };
 };
+
+//HEY!
+// Question: seeding treats is confusing
+// i think the way to go is to not seed Mongo, and instead just create a
+// UserDataTreatService or something like that, and keep local Treats out of the DB
