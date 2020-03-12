@@ -1,6 +1,7 @@
-import { Result, ok } from "../types/result";
+import { Result, ok, isError, isOk } from "../types/result";
 
 import { Treat, TreatItem, TreatSourceItem } from "../core";
+import { PluginService } from "../plugin";
 import { TreatSourceItemLoader } from "./treat_source_item_loader";
 
 class TreatItemSorter {
@@ -11,26 +12,37 @@ class TreatItemSorter {
 }
 
 export class TreatItemLoader {
-  static async load(treat: Treat): Promise<Array<TreatItem>> {
-    const { treatSource, config } = treat;
-
-    let treatSourceItems = await TreatSourceItemLoader.load(
-      treatSource,
-      config
-    );
-    const treatItems = treatSourceItems.map(i =>
-      treatItemFromTreatSourceItem(treat, i)
-    );
-    return TreatItemSorter.sort(treatItems);
+  pluginService: PluginService;
+  constructor(pluginService: PluginService) {
+    this.pluginService = pluginService;
   }
 
-  static async loadAll(
-    treats: Array<Treat>
-  ): Promise<Result<Array<TreatItem>>> {
+  async load(treat: Treat): Promise<Result<Array<TreatItem>>> {
+    const { treatSource, config } = treat;
+
+    let treatSourceItems = await new TreatSourceItemLoader(
+      this.pluginService
+    ).load(treatSource, config);
+
+    if (isError(treatSourceItems)) {
+      return treatSourceItems;
+    }
+
+    console.log(treatSourceItems);
+
+    const treatItems = treatSourceItems.value.map(i =>
+      treatItemFromTreatSourceItem(treat, i)
+    );
+    return ok(TreatItemSorter.sort(treatItems));
+  }
+
+  async loadAll(treats: Array<Treat>): Promise<Result<Array<TreatItem>>> {
     let items: Array<TreatItem> = [];
     for (let treat of treats) {
       const _items = await this.load(treat);
-      items = items.concat(_items);
+      if (isOk(_items)) {
+        items = items.concat(_items.value);
+      }
     }
     return ok(TreatItemSorter.sort(items));
   }

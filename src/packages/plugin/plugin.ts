@@ -1,45 +1,56 @@
+import { Result, ok, error, isError } from "../types/result";
+import { TreatSourceConfigOptions, TreatSourceConfig } from "../core";
 import {
-  TreatSource,
-  TreatSourceConfigOptions,
-  TreatSourceConfig
-} from "../core";
+  PluginDefinition,
+  PluginDefinitionTreatSource,
+  PluginConfig
+} from "./plugin_definition";
 
-export interface Plugin {
-  path: string;
-  TreatSource: PluginTreatSource;
-}
+export class Plugin {
+  name: string;
 
-export interface PluginModule {
-  TreatSource: PluginTreatSource;
-}
+  constructor(
+    private modPlugin: PluginDefinition,
+    private config?: PluginConfig
+  ) {
+    const { name } = modPlugin;
+    this.name = name;
+  }
 
-export interface PluginTreatSource {
-  name: TreatSource["name"];
-  configOptions: TreatSourceConfigOptions;
-  loadItems(config?: TreatSourceConfig): Promise<any>;
-}
+  treatSource(name: string): Result<PluginTreatSource> {
+    const def = this.modPlugin.treatSources[name];
+    if (!def) {
+      return error(
+        new Error(
+          `Plugin ${this.name} does not contain treatSource with name ${name}`
+        )
+      );
+    }
 
-export function loadPlugin(pluginPath: string): Plugin {
-  try {
-    return {
-      path: pluginPath,
-      ...require(pluginPath)
-    };
-  } catch (e) {
-    console.log(e);
-    throw new Error(`Error requiring plugin ${pluginPath} ${e}`);
+    return ok(new PluginTreatSource(def));
+  }
+
+  treatSources(): Array<PluginTreatSource> {
+    return Object.values<PluginDefinitionTreatSource>(
+      this.modPlugin.treatSources
+    ).map((tsd: PluginDefinitionTreatSource) => new PluginTreatSource(tsd));
   }
 }
 
-export function loadPluginTreatSource(pluginPath: string): PluginTreatSource {
-  const plugin = loadPlugin(pluginPath);
-  return plugin.TreatSource;
-}
+export class PluginTreatSource {
+  private definition: PluginDefinitionTreatSource;
+  name: string;
+  configOptions: TreatSourceConfigOptions;
 
-/*
- * Returns whether or not fileName is a valid file name for a
- * Treats plugin
- */
-export function isPluginFileName(fileName: string) {
-  return fileName.endsWith(".js");
+  constructor(definition: PluginDefinitionTreatSource) {
+    this.definition = definition;
+
+    const { name, configOptions } = definition;
+    this.name = name;
+    this.configOptions = configOptions;
+  }
+
+  async loadItems(config?: TreatSourceConfig) {
+    return Promise.resolve([]);
+  }
 }

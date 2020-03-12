@@ -1,4 +1,4 @@
-import { ok, error, isOk, isError } from "../types/result";
+import { ok, error, isOk, isError, Result } from "../types/result";
 import {
   Treat,
   TreatProps,
@@ -16,15 +16,16 @@ function createTreatId(userTreat: UserTreat) {
 async function mapUserTreatToTreat(
   userTreat: UserTreat,
   treatSourceService: TreatSourceService
-) {
+): Promise<Result<Treat>> {
   const treatSource = await treatSourceService.get(userTreat.idTreatSource);
-  if (!treatSource) {
+  if (isError(treatSource)) {
+    console.log(treatSource.error);
     return error(new Error("HERE"));
   }
   return ok({
     ...userTreat,
     id: createTreatId(userTreat),
-    treatSource
+    treatSource: treatSource.value
   });
 }
 

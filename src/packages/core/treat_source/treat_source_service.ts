@@ -1,6 +1,7 @@
+import { Result } from "../../types/result";
 import { TreatSource } from ".";
 
 export interface TreatSourceService {
-  get(id: string): Promise<TreatSource | null>;
-  all(): Promise<Array<TreatSource>>;
+  get(id: string): Promise<Result<TreatSource>>;
+  all(): Promise<Result<Array<TreatSource>>>;
 }

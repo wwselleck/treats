@@ -1,16 +1,28 @@
+import { Result, ok, isError } from "../types/result";
 import {
   TreatSource,
   TreatSourceType,
   TreatSourceItem,
   TreatSourceConfig,
-  PluginTreatSource
+  PluginTreatSource as PluginTreatSourceType
 } from "../core";
-import { loadPluginTreatSource } from "../plugin";
+import { PluginService, PluginTreatSource } from "../plugin";
 
 export class TreatSourceItemLoader {
-  static load(treatSource: TreatSource, config: TreatSourceConfig) {
+  pluginService: PluginService;
+  constructor(pluginService: PluginService) {
+    this.pluginService = pluginService;
+  }
+
+  load(
+    treatSource: TreatSource,
+    config: TreatSourceConfig
+  ): Promise<Result<Array<TreatSourceItem>>> {
     if (treatSource.type === TreatSourceType.Plugin) {
-      return PluginTreatSourceItemLoader.load(treatSource, config);
+      return new PluginTreatSourceItemLoader(this.pluginService).load(
+        treatSource,
+        config
+      );
     } else {
       throw new Error();
     }
@@ -18,15 +30,31 @@ export class TreatSourceItemLoader {
 }
 
 class PluginTreatSourceItemLoader {
-  static async load(
-    treatSource: PluginTreatSource,
+  pluginService: PluginService;
+
+  constructor(pluginService: PluginService) {
+    this.pluginService = pluginService;
+  }
+
+  async load(
+    treatSourceEntity: PluginTreatSourceType,
     config?: TreatSourceConfig
-  ): Promise<Array<TreatSourceItem>> {
-    const { pluginPath } = treatSource;
+  ): Promise<Result<Array<TreatSourceItem>>> {
+    const plugin = await this.pluginService.get(
+      treatSourceEntity.info.pluginName
+    );
 
-    const pluginTreatSource = loadPluginTreatSource(pluginPath);
+    if (isError(plugin)) {
+      return plugin;
+    }
 
-    const items = await pluginTreatSource.loadItems(config);
-    return items;
+    const treatSource = plugin.value.treatSource(treatSourceEntity.name);
+
+    if (isError(treatSource)) {
+      return treatSource;
+    }
+
+    const items = await treatSource.value.loadItems(config);
+    return ok(items);
   }
 }

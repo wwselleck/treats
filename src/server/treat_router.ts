@@ -12,11 +12,13 @@ import { ExpressResponseHelper } from "./express_helper";
 interface TreatRouterConfig {
   treatSourceService: TreatSourceService;
   treatService: TreatService;
+  treatItemLoader: TreatItemLoader;
 }
 
 export function createTreatRouter({
   treatSourceService,
-  treatService
+  treatService,
+  treatItemLoader
 }: TreatRouterConfig) {
   const TreatSourceRouter = express
     .Router()
@@ -54,7 +56,7 @@ export function createTreatRouter({
         return;
       }
 
-      const items = await TreatItemLoader.loadAll(treats.value);
+      const items = await treatItemLoader.loadAll(treats.value);
 
       if (isError(items)) {
         ExpressResponseHelper.InternalServerError(res);
@@ -86,8 +88,13 @@ export function createTreatRouter({
           ExpressResponseHelper.InternalServerError(res);
           return;
         }
-        const items = await TreatItemLoader.load(treat.value);
-        res.json(items);
+        const items = await treatItemLoader.load(treat.value);
+
+        if (isError(items)) {
+          ExpressResponseHelper.InternalServerError(res);
+          return;
+        }
+        res.json(items.value);
       }
     );
 

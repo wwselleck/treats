@@ -1,5 +1,4 @@
 export * from "./services/treat_service";
-export * from "./services/treat_source_service";
 
 import mongoose = require("mongoose");
 

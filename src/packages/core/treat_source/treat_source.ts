@@ -22,7 +22,7 @@ export type TreatSourceConfigOptions = {
 export interface TreatSourceConfigOption {
   optionName: string;
   optionType: TreatSourceConfigOptionType;
-  isRequired: boolean;
+  isRequired?: boolean;
 }
 
 export enum TreatSourceConfigOptionType {
@@ -34,11 +34,14 @@ export interface BaseTreatSource {
   id: string;
   name: string;
   configOptions?: TreatSourceConfigOptions;
+  info?: any;
 }
 
 export interface PluginTreatSource extends BaseTreatSource {
   type: TreatSourceType.Plugin;
-  pluginPath: string;
+  info: {
+    pluginName: string;
+  };
 }
 
 export type TreatSource = PluginTreatSource;

@@ -30,4 +30,9 @@ export class UserData {
     const data = JSON.stringify(obj, null, 2);
     return util.promisify(fs.writeFile)(path, data);
   }
+
+  static async readJS(filePath: string) {
+    const path = absolutePath(filePath);
+    return require(path);
+  }
 }

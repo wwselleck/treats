@@ -1,59 +1,51 @@
 import { TreatSourceConfigOptionType } from "../core";
 
-export default class ExampleTreatSourcePlugin {
-  static definition = {
-    id: "example",
-    name: "Example Treat Source Plugin"
-  };
+const ExamplePlugin = {
+  name: "builtin/example",
+  treatSources: [
+    {
+      name: "ExampleTreatSource",
+      configOptions: {
+        exclude_c: {
+          optionName: "exclude_c",
+          optionType: TreatSourceConfigOptionType.Boolean,
+          isRequired: false
+        }
+      },
 
-  static create() {
-    return new ExampleTreatSourcePlugin();
-  }
-}
-
-export const TreatSource = {
-  name: "ExampleTreatSource",
-  configOptions: {
-    exclude_c: {
-      optionName: "exclude_c",
-      optionType: TreatSourceConfigOptionType.Boolean,
-      isRequired: false
-    }
-  },
-  loadItems: () => {
-    return Promise.resolve([
-      {
-        id: "a",
-        idTreatSource: ExampleTreatSourcePlugin.definition.id,
-        title: "A",
-        score: 500,
-        description: "An A",
-        link: "https://example.com/a"
-      },
-      {
-        id: "b",
-        idTreatSource: ExampleTreatSourcePlugin.definition.id,
-        title: "B",
-        score: 900,
-        description: "B",
-        link: "https://example.com/b"
-      },
-      {
-        id: "c",
-        idTreatSource: ExampleTreatSourcePlugin.definition.id,
-        title: "C",
-        score: 300,
-        description: "C",
-        link: "https://example.com/c"
-      },
-      {
-        id: "d",
-        idTreatSource: ExampleTreatSourcePlugin.definition.id,
-        title: "D",
-        score: 400,
-        description: "D",
-        link: "https://example.com/d"
+      loadItems() {
+        return Promise.resolve([
+          {
+            id: "a",
+            title: "A",
+            score: 500,
+            description: "A",
+            link: "https://example.com/a"
+          },
+          {
+            id: "b",
+            title: "B",
+            score: 900,
+            description: "B",
+            link: "https://example.com/b"
+          },
+          {
+            id: "c",
+            title: "C",
+            score: 300,
+            description: "C",
+            link: "https://example.com/c"
+          },
+          {
+            id: "d",
+            title: "D",
+            score: 400,
+            description: "D",
+            link: "https://example.com/d"
+          }
+        ]);
       }
-    ]);
-  }
+    }
+  ]
 };
+module.exports = ExamplePlugin;

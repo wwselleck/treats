@@ -3,20 +3,21 @@ export * from "./serialize";
 import path = require("path");
 import { logger } from "../packages/logger";
 import { Config } from "../packages/config";
-import {
-  connectToDB,
-  MongoTreatService,
-  PluginTreatSourceService
-} from "../packages/db";
-import * as TreatsServer from "./server";
+import { connectToDB, MongoTreatService } from "../packages/db";
+import { PluginService, PluginTreatSourceService } from "../packages/plugin";
 import { UserDataTreatService } from "../packages/user_data";
+import { TreatItemLoader } from "../packages/item_loader";
+import * as TreatsServer from "./server";
 
 async function loadLocalModeDeps() {
-  const treatSourceService = new PluginTreatSourceService({
+  const pluginService = await PluginService.create({
     moduleDirectories: [path.resolve(__dirname, "../packages/builtin_plugins")]
   });
+  const treatSourceService = new PluginTreatSourceService(pluginService);
   const treatService = new UserDataTreatService(treatSourceService);
-  return { treatSourceService, treatService };
+
+  const treatItemLoader = new TreatItemLoader(pluginService);
+  return { treatSourceService, treatService, treatItemLoader };
 }
 
 async function loadDeps() {
@@ -27,18 +28,21 @@ async function loadDeps() {
       `mongodb://${Config.DB_URI}:${Config.DB_PORT}/${Config.DB_NAME}`
     );
 
-    const treatSourceService = new PluginTreatSourceService({
+    const pluginService = await PluginService.create({
       moduleDirectories: [
         path.resolve(__dirname, "../packages/builtin_plugins")
       ]
     });
+    const treatSourceService = new PluginTreatSourceService(pluginService);
 
     const treatService = new MongoTreatService({
       db,
       treatSourceService
     });
 
-    return { treatSourceService, treatService };
+    const treatItemLoader = new TreatItemLoader(pluginService);
+
+    return { treatSourceService, treatService, treatItemLoader };
   }
 }
 

@@ -1,5 +1,6 @@
 import express = require("express");
 import { TreatSourceService } from "../packages/core";
+import { isError } from "../packages/types/result";
 
 export function createTreatSourceRouter(
   treatSourceService: TreatSourceService
@@ -7,8 +8,12 @@ export function createTreatSourceRouter(
   const TreatSourceRouter = express
     .Router()
     .get("/", async (_, res: express.Response) => {
-      const sources = Array.from(await treatSourceService.all());
-      res.json(sources);
+      const sources = await treatSourceService.all();
+      if (isError(sources)) {
+        throw sources.error;
+      }
+      res.json(sources.value);
+      console.log("hi");
     })
     .get(
       "/:idTreatSource",

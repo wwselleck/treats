@@ -1,4 +1,4 @@
-import { ok, error } from "../../types/result";
+import { Result, ok, error, isError } from "../../types/result";
 import {
   Treat,
   TreatService,
@@ -6,6 +6,7 @@ import {
   TreatSourceService,
   NotFoundError
 } from "../../core";
+import { logger } from "../../logger";
 import { DB, TreatModel } from "..";
 
 interface MongoTreatServiceOptions {
@@ -25,18 +26,29 @@ export class MongoTreatService implements TreatService {
       return error(new NotFoundError());
     }
 
-    return ok(await treatModelToEntity(treat, this.options.treatSourceService));
+    const treatEntity = await treatModelToEntity(
+      treat,
+      this.options.treatSourceService
+    );
+    return treatEntity;
   }
 
   async all() {
     const treats = await this.options.db.Treat.find();
-    return ok(
-      await Promise.all(
-        treats.map(treat =>
-          treatModelToEntity(treat, this.options.treatSourceService)
-        )
-      )
-    );
+
+    const treatEntities = [];
+    for (const treat of treats) {
+      const treatEntity = await treatModelToEntity(
+        treat,
+        this.options.treatSourceService
+      );
+      if (isError(treatEntity)) {
+        logger.warn("Skipping look here");
+      } else {
+        treatEntities.push(treatEntity.value);
+      }
+    }
+    return ok(treatEntities);
   }
 
   async create(props: TreatProps) {
@@ -45,27 +57,34 @@ export class MongoTreatService implements TreatService {
       treat._id = props.id;
     }
     const treatModel = new this.options.db.Treat(treat);
-    treatModel.save();
-    return ok(
-      await treatModelToEntity(treatModel, this.options.treatSourceService)
+
+    const treatEntity = await treatModelToEntity(
+      treatModel,
+      this.options.treatSourceService
     );
+
+    if (isError(treatEntity)) {
+      return treatEntity;
+    }
+    treatModel.save();
+    return treatEntity;
   }
 }
 
 async function treatModelToEntity(
   model: TreatModel,
   treatSourceService: TreatSourceService
-): Promise<Treat> {
+): Promise<Result<Treat>> {
   const treatSource = await treatSourceService.get(model.idTreatSource);
-  if (!treatSource) {
-    throw new Error("Invalid treatSource");
+  if (isError(treatSource)) {
+    return error(new Error("Invalid treatSource"));
   }
 
-  return {
+  return ok({
     id: model._id,
     idTreatSource: model.idTreatSource,
     name: model.name,
     config: model.config,
-    treatSource
-  };
+    treatSource: treatSource.value
+  });
 }
