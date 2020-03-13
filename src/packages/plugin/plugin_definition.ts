@@ -1,7 +1,10 @@
+import * as t from "io-ts";
+
 import {
   TreatSource,
   TreatSourceConfigOptions,
-  TreatSourceConfig
+  TreatSourceConfig,
+  TreatSourceConfigOptionType
 } from "../core";
 
 /**
@@ -9,16 +12,37 @@ import {
  * the plugin. Outside of the PluginService, plugin functionality
  * will be accessed through wrapper objects.
  */
+const PluginDefinitionTreatSourceConfigOptionType = t.union([
+  t.literal(TreatSourceConfigOptionType.String),
+  t.literal(TreatSourceConfigOptionType.Boolean)
+]);
+
+const PluginDefinitionTreatSourceConfigOption = t.type({
+  optionName: t.string,
+  optionType: PluginDefinitionTreatSourceConfigOptionType,
+  isRequired: t.union([t.boolean, t.undefined])
+});
+
+const PluginDefinitionTreatSourceConfigOptions = t.record(
+  t.string,
+  PluginDefinitionTreatSourceConfigOption
+);
+
+const PluginDefinitionTreatSource = t.type({
+  name: t.string,
+  configOptions: PluginDefinitionTreatSourceConfigOptions,
+  loadItems: t.Function
+});
+
+export const PluginDefinition = t.type({
+  name: t.string,
+  treatSources: t.record(t.string, PluginDefinitionTreatSource)
+});
 
 export type PluginConfig = any;
 
-export interface PluginDefinition {
-  name: string;
-  treatSources: Record<string, PluginDefinitionTreatSource>;
-}
+export type PluginDefinition = t.TypeOf<typeof PluginDefinition>;
 
-export interface PluginDefinitionTreatSource {
-  name: string;
-  configOptions: TreatSourceConfigOptions;
-  loadItems(config?: TreatSourceConfig): Promise<any>;
-}
+export type PluginDefinitionTreatSource = t.TypeOf<
+  typeof PluginDefinitionTreatSource
+>;

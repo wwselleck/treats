@@ -2,8 +2,8 @@ import { TreatSourceConfigOptionType } from "../core";
 
 const ExamplePlugin = {
   name: "builtin/example",
-  treatSources: [
-    {
+  treatSources: {
+    ExampleTreatSource: {
       name: "ExampleTreatSource",
       configOptions: {
         exclude_c: {
@@ -46,6 +46,6 @@ const ExamplePlugin = {
         ]);
       }
     }
-  ]
+  }
 };
 module.exports = ExamplePlugin;

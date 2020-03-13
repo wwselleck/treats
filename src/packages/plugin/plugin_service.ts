@@ -2,7 +2,11 @@ import util = require("util");
 import fs = require("fs");
 import path = require("path");
 
-import { Result, ok, error } from "../types/result";
+import { PathReporter } from "io-ts/lib/PathReporter";
+import { isLeft } from "fp-ts/lib/Either";
+
+import { logger } from "../logger";
+import { Result, ok, error, isOk } from "../types/result";
 import { UserData } from "../user_data";
 import { PluginDefinition, PluginConfig } from "./plugin_definition";
 import { Plugin } from "./plugin";
@@ -22,7 +26,6 @@ export class PluginService {
   static async create(options: PluginServiceOptions) {
     const configs = loadPluginConfigs();
     const plugins = await loadPlugins(options.moduleDirectories, configs);
-    console.log(plugins);
 
     return new PluginService(options, plugins, configs);
   }
@@ -42,11 +45,21 @@ export class PluginService {
   }
 }
 
-function loadPluginDefinition(pluginPath: string): PluginDefinition {
+function loadPluginDefinition(pluginPath: string): Result<PluginDefinition> {
   try {
-    return require(pluginPath);
+    const mod: unknown = require(pluginPath);
+    const pluginDefinition = PluginDefinition.decode(mod);
+    if (isLeft(pluginDefinition)) {
+      return error(
+        new Error(
+          `Plugin ${pluginPath} provided an incorrect definition ${PathReporter.report(
+            pluginDefinition
+          )}`
+        )
+      );
+    }
+    return ok(pluginDefinition.right);
   } catch (e) {
-    console.log(e);
     throw new Error(`Error requiring plugin ${pluginPath} ${e}`);
   }
 }
@@ -65,6 +78,14 @@ async function loadPlugins(
   );
   const plugins = modulePluginPaths
     .map(loadPluginDefinition)
+    .reduce((acc, curr) => {
+      if (isOk(curr)) {
+        acc.push(curr.value);
+      } else {
+        logger.warn(`Could not load plugin ${curr.error}`);
+      }
+      return acc;
+    }, [] as Array<PluginDefinition>)
     .map(mp => {
       const config = configs[mp.name];
       return new Plugin(mp, config);
