@@ -24,7 +24,9 @@ export class PluginService {
   ) {}
 
   static async create(options: PluginServiceOptions) {
-    const configs = loadPluginConfigs();
+    const configs = await loadPluginConfigs();
+    console.log("CONFIGS");
+    console.log(configs);
     const plugins = await loadPlugins(options.moduleDirectories, configs);
 
     return new PluginService(options, plugins, configs);
@@ -64,7 +66,7 @@ function loadPluginDefinition(pluginPath: string): Result<PluginDefinition> {
   }
 }
 
-function loadPluginConfigs() {
+function loadPluginConfigs(): Record<string, PluginConfig> {
   const mod = UserData.readJS("plugin_config.js");
   return mod;
 }
@@ -88,6 +90,9 @@ async function loadPlugins(
     }, [] as Array<PluginDefinition>)
     .map(mp => {
       const config = configs[mp.name];
+      console.log(configs);
+      console.log(mp.name);
+      console.log(config);
       return new Plugin(mp, config);
     })
     .reduce((acc, curr: Plugin) => {

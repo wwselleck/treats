@@ -39,7 +39,7 @@ const TreatItemTable = {
       table.push([
         chalk.blue(item.score),
         item.title,
-        item.description,
+        item.description || "",
         item.link
       ]);
     }

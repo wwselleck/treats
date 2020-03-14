@@ -28,8 +28,6 @@ export class TreatItemLoader {
       return treatSourceItems;
     }
 
-    console.log(treatSourceItems);
-
     const treatItems = treatSourceItems.value.map(i =>
       treatItemFromTreatSourceItem(treat, i)
     );
@@ -41,6 +39,7 @@ export class TreatItemLoader {
     for (let treat of treats) {
       const _items = await this.load(treat);
       if (isOk(_items)) {
+        console.log(_items);
         items = items.concat(_items.value);
       }
     }

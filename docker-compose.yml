@@ -14,6 +14,9 @@ services:
     environment:
       - DB_URI=mongo
       - DB_PORT=27017
+      - REDDIT_CLIENT_ID
+      - REDDIT_CLIENT_SECRET
+      - REDDIT_REFRESH_TOKEN
     image: app_builder
     depends_on:
       - app_builder

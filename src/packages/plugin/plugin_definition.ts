@@ -1,11 +1,6 @@
 import * as t from "io-ts";
 
-import {
-  TreatSource,
-  TreatSourceConfigOptions,
-  TreatSourceConfig,
-  TreatSourceConfigOptionType
-} from "../core";
+import { TreatSourceConfigOptionType } from "../core";
 
 /**
  * These types are how the _creator_ of a plugin defines
@@ -17,11 +12,15 @@ const PluginDefinitionTreatSourceConfigOptionType = t.union([
   t.literal(TreatSourceConfigOptionType.Boolean)
 ]);
 
-const PluginDefinitionTreatSourceConfigOption = t.type({
-  optionName: t.string,
-  optionType: PluginDefinitionTreatSourceConfigOptionType,
-  isRequired: t.union([t.boolean, t.undefined])
-});
+const PluginDefinitionTreatSourceConfigOption = t.intersection([
+  t.type({
+    optionName: t.string,
+    optionType: PluginDefinitionTreatSourceConfigOptionType
+  }),
+  t.partial({
+    isRequired: t.union([t.boolean, t.undefined])
+  })
+]);
 
 const PluginDefinitionTreatSourceConfigOptions = t.record(
   t.string,

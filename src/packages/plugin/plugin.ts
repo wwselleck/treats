@@ -27,23 +27,32 @@ export class Plugin {
       );
     }
 
-    return ok(new PluginTreatSource(def));
+    return ok(new PluginTreatSource(def, this.config));
   }
 
   treatSources(): Array<PluginTreatSource> {
     return Object.values<PluginDefinitionTreatSource>(
       this.modPlugin.treatSources
-    ).map((tsd: PluginDefinitionTreatSource) => new PluginTreatSource(tsd));
+    ).map(
+      (tsd: PluginDefinitionTreatSource) =>
+        new PluginTreatSource(tsd, this.config)
+    );
   }
 }
 
 export class PluginTreatSource {
   private definition: PluginDefinitionTreatSource;
+  private pluginConfig: PluginConfig;
+
   name: string;
   configOptions: TreatSourceConfigOptions;
 
-  constructor(definition: PluginDefinitionTreatSource) {
+  constructor(
+    definition: PluginDefinitionTreatSource,
+    pluginConfig: PluginConfig
+  ) {
     this.definition = definition;
+    this.pluginConfig = pluginConfig;
 
     const { name, configOptions } = definition;
     this.name = name;
@@ -51,6 +60,10 @@ export class PluginTreatSource {
   }
 
   async loadItems(config?: TreatSourceConfig) {
-    return Promise.resolve([]);
+    const _loadItems = this.definition.loadItems;
+    const items = await _loadItems(config, this.pluginConfig);
+    console.log(this.definition);
+    console.log(items);
+    return Promise.resolve(items);
   }
 }
