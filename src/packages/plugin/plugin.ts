@@ -62,8 +62,6 @@ export class PluginTreatSource {
   async loadItems(config?: TreatSourceConfig) {
     const _loadItems = this.definition.loadItems;
     const items = await _loadItems(config, this.pluginConfig);
-    console.log(this.definition);
-    console.log(items);
     return Promise.resolve(items);
   }
 }

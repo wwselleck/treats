@@ -1,5 +1,6 @@
 export interface TreatSourceItem {
   id: string;
+  date: Date;
   idTreatSource: string;
   title: string;
   description?: string;

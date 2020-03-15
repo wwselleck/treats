@@ -4,9 +4,10 @@ import {
   TreatSourceType,
   TreatSourceItem,
   TreatSourceConfig,
-  PluginTreatSource as PluginTreatSourceType
+  PluginTreatSource as PluginTreatSourceType,
+  Scoreable
 } from "../core";
-import { PluginService, PluginTreatSource } from "../plugin";
+import { PluginService } from "../plugin";
 
 export class TreatSourceItemLoader {
   pluginService: PluginService;
@@ -14,19 +15,32 @@ export class TreatSourceItemLoader {
     this.pluginService = pluginService;
   }
 
-  load(
+  async load(
     treatSource: TreatSource,
     config: TreatSourceConfig
   ): Promise<Result<Array<TreatSourceItem>>> {
+    let items;
     if (treatSource.type === TreatSourceType.Plugin) {
-      return new PluginTreatSourceItemLoader(this.pluginService).load(
+      items = await new PluginTreatSourceItemLoader(this.pluginService).load(
         treatSource,
         config
       );
     } else {
       throw new Error();
     }
+
+    if (isError(items)) {
+      return items;
+    }
+    return ok(items.value.map(roundScore));
   }
+}
+
+function roundScore<T extends Scoreable>(i: T): T {
+  return {
+    ...i,
+    score: Math.round(i.score)
+  };
 }
 
 class PluginTreatSourceItemLoader {

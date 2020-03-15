@@ -1,4 +1,5 @@
 import snoowrap = require("snoowrap");
+import { pipe } from "fp-ts/lib/pipeable";
 
 import { PluginDefinition } from "../plugin";
 import { TreatSourceItem, TreatSourceConfigOptionType } from "../core";
@@ -21,29 +22,70 @@ const RedditPlugin: PluginDefinition = {
         }
       },
       async loadItems(config, pluginConfig: RedditPluginConfig) {
-        console.log();
         const client = new RedditAPI(pluginConfig);
         const submissions = await client.getSubmissions();
 
-        console.log("here!");
-        console.log(submissions);
-        return submissions.map(mapSubmissionToTreatSourceItem);
+        const items = submissions.map(mapSubmissionToTreatSourceItem);
+        const scoredItems = scoreItems(items);
+        return scoredItems;
       }
     }
   }
 };
 
-function mapSubmissionToTreatSourceItem(
-  s: snoowrap.Submission
-): TreatSourceItem {
+function scoreItems(items: Array<TreatSourceItem>) {
+  return pipe(items, applyArrayPositionMultiplier);
+}
+
+function applyArrayPositionMultiplier(items: Array<TreatSourceItem>) {
+  console.log(items);
+  const totalItems = items.length;
+
+  return items.map((item, i) => {
+    const baseMultiplier = 1;
+    const multiplierFloor = 0.8;
+    const multiplierDistance = baseMultiplier - multiplierFloor;
+
+    const multiplier = baseMultiplier - multiplierDistance * (i / totalItems);
+    console.log(multiplier);
+    return {
+      ...item,
+      score: item.score * multiplier
+    };
+  });
+}
+
+function mapSubmissionToTreatSourceItem(s: snoowrap.Submission) {
   return {
     id: s.id,
     idTreatSource: "idk",
+    date: new Date(s.created_utc * 1000),
     title: s.title,
-    link: s.permalink,
-    score: 1000
+    description: s.selftext,
+    link: `https://reddit.com${s.permalink}`,
+    score: 500
   };
 }
+
+/* Not going to use for now since Reddit hot listing
+ * already accounts for date created n stuff
+function dateMultiplierForRedditSubmission(s: snoowrap.Submission) {
+  const dateCreated = new Date(s.created_utc * 1000);
+  const now = new Date();
+  const twoDaysAgo = dateDaysAgo(2);
+
+  const percentage =
+    Math.abs(dateCreated - twoDaysAgo) / Math.abs(now - twoDaysAgo);
+  console.log(`${percentage}%`);
+  return 1 - 0.1 * percentage;
+}
+
+function dateDaysAgo(daysAgo: number) {
+  const date = new Date();
+  date.setDate(date.getDate() - daysAgo);
+  return date;
+}
+*/
 
 interface RedditAPIConfig {
   clientId: string;
@@ -54,11 +96,9 @@ interface RedditAPIConfig {
 class RedditAPI {
   client: snoowrap;
   constructor(private config: RedditAPIConfig) {
-    console.log("confnig");
-    console.log(config);
     this.client = new snoowrap({
       ...config,
-      userAgent: "treats-dev-scratchpad"
+      userAgent: "treats_builtin/reddit"
     });
   }
 

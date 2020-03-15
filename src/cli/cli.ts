@@ -1,7 +1,7 @@
 import commander = require("commander");
 import chalk = require("chalk");
 const inquirer = require("inquirer");
-import Table from "cli-table";
+import Table, { HorizontalTable } from "cli-table3";
 import { TreatsAPI } from "./api";
 import {
   TreatSourceConfigOptionType,
@@ -21,7 +21,7 @@ const TreatTable = {
   toString(treats: Array<SerializedTreat>) {
     const table = new Table({
       head: ["id", "name", "config"]
-    });
+    }) as HorizontalTable;
 
     for (const treat of treats) {
       table.push([treat.id, treat.name, JSON.stringify(treat.config)]);
@@ -32,15 +32,16 @@ const TreatTable = {
 
 const TreatItemTable = {
   toString(items: Array<SerializedTreatItem>) {
-    const table = new Table({
-      head: ["score", "title", "description", "link"]
-    });
+    const table: HorizontalTable = new Table({
+      head: ["score", "title", "description", "link"],
+      colWidths: [8, 50, 50]
+    }) as HorizontalTable;
     for (const item of items) {
       table.push([
         chalk.blue(item.score),
         item.title,
         item.description || "",
-        item.link
+        item.link || ""
       ]);
     }
     return table.toString();

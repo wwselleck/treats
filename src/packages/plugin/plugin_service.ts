@@ -24,10 +24,22 @@ export class PluginService {
   ) {}
 
   static async create(options: PluginServiceOptions) {
+    const pluginPaths = await getPluginPathsFromDirectories(
+      options.moduleDirectories
+    );
+    const pluginDefinitions = pluginPaths
+      .map(loadPluginDefinition)
+      .reduce((acc, curr) => {
+        if (isOk(curr)) {
+          acc.push(curr.value);
+        } else {
+          logger.warn(`Could not load plugin definition ${curr.error}`);
+        }
+        return acc;
+      }, [] as Array<PluginDefinition>);
+
     const configs = await loadPluginConfigs();
-    console.log("CONFIGS");
-    console.log(configs);
-    const plugins = await loadPlugins(options.moduleDirectories, configs);
+    const plugins = await createPluginInstances(pluginDefinitions, configs);
 
     return new PluginService(options, plugins, configs);
   }
@@ -71,35 +83,19 @@ function loadPluginConfigs(): Record<string, PluginConfig> {
   return mod;
 }
 
-async function loadPlugins(
-  moduleDirectories: Array<string>,
+async function createPluginInstances(
+  pluginsDefinitions: Array<PluginDefinition>,
   configs: Record<string, PluginConfig>
 ) {
-  const modulePluginPaths = await getPluginPathsFromDirectories(
-    moduleDirectories
-  );
-  const plugins = modulePluginPaths
-    .map(loadPluginDefinition)
-    .reduce((acc, curr) => {
-      if (isOk(curr)) {
-        acc.push(curr.value);
-      } else {
-        logger.warn(`Could not load plugin ${curr.error}`);
-      }
-      return acc;
-    }, [] as Array<PluginDefinition>)
+  return pluginsDefinitions
     .map(mp => {
       const config = configs[mp.name];
-      console.log(configs);
-      console.log(mp.name);
-      console.log(config);
       return new Plugin(mp, config);
     })
     .reduce((acc, curr: Plugin) => {
       acc[curr.name] = curr;
       return acc;
     }, {} as Record<string, Plugin>);
-  return plugins;
 }
 
 async function getPluginPathsFromDirectory(directoryPath: string) {
