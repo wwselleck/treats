@@ -1,4 +1,5 @@
 import { TreatSource } from "../treat_source";
+import { Item } from "../item";
 
 export type TreatConfig = Record<string, any>;
 export interface Treat {
@@ -9,11 +10,6 @@ export interface Treat {
   treatSource: TreatSource;
 }
 
-export interface TreatItem {
-  id: string;
+export interface TreatItem extends Item {
   idTreat: string;
-  title: string;
-  description?: string;
-  link?: string;
-  score: number;
 }

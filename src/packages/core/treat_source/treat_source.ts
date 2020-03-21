@@ -1,10 +1,9 @@
-export interface TreatSourceItem {
+import { ContentItem, Scoreable } from "../item";
+
+export interface TreatSourceItem extends ContentItem, Scoreable {
   id: string;
   date: Date;
   idTreatSource: string;
-  title: string;
-  description?: string;
-  link?: string;
   score: number;
 }
 

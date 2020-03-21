@@ -27,6 +27,7 @@ export class PluginService {
     const pluginPaths = await getPluginPathsFromDirectories(
       options.moduleDirectories
     );
+    logger.info({ pluginPaths }, "Attempting to load plugins from paths");
     const pluginDefinitions = pluginPaths
       .map(loadPluginDefinition)
       .reduce((acc, curr) => {
@@ -101,7 +102,7 @@ async function createPluginInstances(
 async function getPluginPathsFromDirectory(directoryPath: string) {
   let possiblePluginFileNames;
   try {
-    possiblePluginFileNames = await util.promisify(fs.readdir)(directoryPath);
+    possiblePluginFileNames = await getFiles(directoryPath);
   } catch (e) {
     throw new Error(`Invalid module directory ${directoryPath}`);
   }
@@ -125,5 +126,23 @@ async function getPluginPathsFromDirectories(directoryPaths: Array<string>) {
  * Treats plugin
  */
 export function isPluginFileName(fileName: string) {
-  return fileName.endsWith(".js");
+  return fileName.endsWith("plugin.js");
+}
+
+// https://stackoverflow.com/questions/5827612/node-js-fs-readdir-recursive-directory-search
+async function getFiles(dir: string): Promise<Array<string>> {
+  const dirents = await util.promisify(fs.readdir)(dir, {
+    withFileTypes: true
+  });
+
+  const files = [];
+  for (let ent of dirents) {
+    const res = path.resolve(dir, ent.name);
+    if (ent.isDirectory()) {
+      files.push(...(await getFiles(res)));
+    } else {
+      files.push(res);
+    }
+  }
+  return files;
 }

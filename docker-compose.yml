@@ -17,6 +17,8 @@ services:
       - REDDIT_CLIENT_ID
       - REDDIT_CLIENT_SECRET
       - REDDIT_REFRESH_TOKEN
+      - TWITCH_CLIENT_ID
+      - TWITCH_TOKEN
     image: app_builder
     depends_on:
       - app_builder

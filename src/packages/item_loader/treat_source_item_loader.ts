@@ -8,6 +8,7 @@ import {
   Scoreable
 } from "../core";
 import { PluginService } from "../plugin";
+import { logger } from "../logger";
 
 export class TreatSourceItemLoader {
   pluginService: PluginService;
@@ -26,10 +27,16 @@ export class TreatSourceItemLoader {
         config
       );
     } else {
-      throw new Error();
+      throw new Error("heeee");
     }
 
     if (isError(items)) {
+      logger.error(
+        {
+          error: items.error.toString()
+        },
+        `Error loading items for source ${treatSource.name}`
+      );
       return items;
     }
     return ok(items.value.map(roundScore));
@@ -69,6 +76,7 @@ class PluginTreatSourceItemLoader {
     }
 
     const items = await treatSource.value.loadItems(config);
-    return ok(items);
+
+    return items;
   }
 }

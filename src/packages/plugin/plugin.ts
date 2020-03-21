@@ -1,5 +1,9 @@
 import { Result, ok, error, isError } from "../types/result";
-import { TreatSourceConfigOptions, TreatSourceConfig } from "../core";
+import {
+  TreatSourceConfigOptions,
+  TreatSourceConfig,
+  TreatSourceItem
+} from "../core";
 import {
   PluginDefinition,
   PluginDefinitionTreatSource,
@@ -59,9 +63,17 @@ export class PluginTreatSource {
     this.configOptions = configOptions;
   }
 
-  async loadItems(config?: TreatSourceConfig) {
+  async loadItems(
+    config?: TreatSourceConfig
+  ): Promise<Result<Array<TreatSourceItem>>> {
     const _loadItems = this.definition.loadItems;
-    const items = await _loadItems(config, this.pluginConfig);
-    return Promise.resolve(items);
+    try {
+      const items = await _loadItems(config, this.pluginConfig);
+      return ok(items);
+    } catch (e) {
+      console.log("hhhhhh");
+      console.log(e);
+      return error(e);
+    }
   }
 }

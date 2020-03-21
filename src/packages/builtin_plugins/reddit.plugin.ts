@@ -3,6 +3,7 @@ import { pipe } from "fp-ts/lib/pipeable";
 
 import { PluginDefinition } from "../plugin";
 import { TreatSourceItem, TreatSourceConfigOptionType } from "../core";
+import { ScoringPipeline, ArrayPositionPipe } from "../item_scoring";
 
 interface RedditPluginConfig {
   clientId: string;
@@ -21,39 +22,19 @@ const RedditPlugin: PluginDefinition = {
           optionType: TreatSourceConfigOptionType.String
         }
       },
-      async loadItems(config, pluginConfig: RedditPluginConfig) {
+      async loadItems(_: any, pluginConfig: RedditPluginConfig) {
         const client = new RedditAPI(pluginConfig);
         const submissions = await client.getSubmissions();
 
         const items = submissions.map(mapSubmissionToTreatSourceItem);
-        const scoredItems = scoreItems(items);
+        const scoredItems = new ScoringPipeline<TreatSourceItem>([
+          ArrayPositionPipe
+        ]).score(items);
         return scoredItems;
       }
     }
   }
 };
-
-function scoreItems(items: Array<TreatSourceItem>) {
-  return pipe(items, applyArrayPositionMultiplier);
-}
-
-function applyArrayPositionMultiplier(items: Array<TreatSourceItem>) {
-  console.log(items);
-  const totalItems = items.length;
-
-  return items.map((item, i) => {
-    const baseMultiplier = 1;
-    const multiplierFloor = 0.8;
-    const multiplierDistance = baseMultiplier - multiplierFloor;
-
-    const multiplier = baseMultiplier - multiplierDistance * (i / totalItems);
-    console.log(multiplier);
-    return {
-      ...item,
-      score: item.score * multiplier
-    };
-  });
-}
 
 function mapSubmissionToTreatSourceItem(s: snoowrap.Submission) {
   return {

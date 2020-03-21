@@ -19,8 +19,7 @@ async function mapUserTreatToTreat(
 ): Promise<Result<Treat>> {
   const treatSource = await treatSourceService.get(userTreat.idTreatSource);
   if (isError(treatSource)) {
-    console.log(treatSource.error);
-    return error(new Error("HERE"));
+    return treatSource;
   }
   return ok({
     ...userTreat,
