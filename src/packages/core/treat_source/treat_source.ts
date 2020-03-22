@@ -1,10 +1,7 @@
-import { ContentItem, Scoreable } from "../item";
+import { Item } from "../item";
 
-export interface TreatSourceItem extends ContentItem, Scoreable {
-  id: string;
-  date: Date;
+export interface TreatSourceItem extends Item {
   idTreatSource: string;
-  score: number;
 }
 
 export enum TreatSourceType {

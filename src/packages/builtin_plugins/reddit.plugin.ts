@@ -1,8 +1,7 @@
 import snoowrap = require("snoowrap");
-import { pipe } from "fp-ts/lib/pipeable";
 
 import { PluginDefinition } from "../plugin";
-import { TreatSourceItem, TreatSourceConfigOptionType } from "../core";
+import { Item, TreatSourceConfigOptionType } from "../core";
 import { ScoringPipeline, ArrayPositionPipe } from "../item_scoring";
 
 interface RedditPluginConfig {
@@ -26,8 +25,8 @@ const RedditPlugin: PluginDefinition = {
         const client = new RedditAPI(pluginConfig);
         const submissions = await client.getSubmissions();
 
-        const items = submissions.map(mapSubmissionToTreatSourceItem);
-        const scoredItems = new ScoringPipeline<TreatSourceItem>([
+        const items = submissions.map(mapSubmissionToItem);
+        const scoredItems = new ScoringPipeline<Item>([
           ArrayPositionPipe
         ]).score(items);
         return scoredItems;
@@ -36,7 +35,7 @@ const RedditPlugin: PluginDefinition = {
   }
 };
 
-function mapSubmissionToTreatSourceItem(s: snoowrap.Submission) {
+function mapSubmissionToItem(s: snoowrap.Submission) {
   return {
     id: s.id,
     idTreatSource: "idk",
@@ -76,7 +75,7 @@ interface RedditAPIConfig {
 
 class RedditAPI {
   client: snoowrap;
-  constructor(private config: RedditAPIConfig) {
+  constructor(config: RedditAPIConfig) {
     this.client = new snoowrap({
       ...config,
       userAgent: "treats_builtin/reddit"

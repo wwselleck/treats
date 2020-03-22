@@ -1,4 +1,4 @@
-import { TreatSourceItem, TreatSourceConfigOptionType } from "../../core";
+import { Item, TreatSourceConfigOptionType } from "../../core";
 import { PluginDefinition } from "../../plugin";
 import { TwitchAPI, Stream } from "./twitch_api";
 import { ScoringPipeline, ArrayPositionPipe } from "../../item_scoring";
@@ -22,20 +22,18 @@ const TwitchPlugin: PluginDefinition = {
       async loadItems(config, pluginConfig: TwitchPluginConfig) {
         const api = new TwitchAPI(pluginConfig);
         const liveStreams = await api.getLiveFollows();
-        const items = liveStreams.map(mapStreamToTreatSourceItem);
-        return new ScoringPipeline<TreatSourceItem>([ArrayPositionPipe]).score(
-          items
-        );
+        const items = liveStreams.map(mapStreamToItem);
+        return new ScoringPipeline<Item>([ArrayPositionPipe]).score(items);
       }
     }
   }
 };
 
-function mapStreamToTreatSourceItem(stream: Stream): TreatSourceItem {
+function mapStreamToItem(stream: Stream): Item {
   return {
     id: stream.id,
-    idTreatSource: "idk2",
-    title: stream.title,
+    title: `${stream.user_name}: ${stream.title}`,
+    link: `https://twitch.tv/${stream.user_name}`,
     date: new Date(),
     score: 0
   };
