@@ -6,8 +6,9 @@ import {
   NotFoundError
 } from "../packages/core";
 import { TreatItemLoader } from "../packages/item_loader";
-import { serializeTreat } from "./serialize";
+import { serializeTreat, serializeTreatItem } from "./serialize";
 import { ExpressResponseHelper } from "./express_helper";
+import { indexArray } from "../packages/util";
 
 interface TreatRouterConfig {
   treatSourceService: TreatSourceService;
@@ -63,7 +64,10 @@ export function createTreatRouter({
         return;
       }
 
-      res.json(items.value);
+      const indexedTreats = indexArray(treats.value, "id");
+      res.json(
+        items.value.map(i => serializeTreatItem(i, indexedTreats[i.idTreat]))
+      );
     })
     .get("/:idTreat", async (req: express.Request, res: express.Response) => {
       const { idTreat } = req.params;
@@ -94,7 +98,7 @@ export function createTreatRouter({
           ExpressResponseHelper.InternalServerError(res);
           return;
         }
-        res.json(items.value);
+        res.json(items.value.map(i => serializeTreatItem(i, treat.value)));
       }
     );
 

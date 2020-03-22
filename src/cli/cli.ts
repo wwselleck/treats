@@ -33,15 +33,16 @@ const TreatTable = {
 const TreatItemTable = {
   toString(items: Array<SerializedTreatItem>) {
     const table: HorizontalTable = new Table({
-      head: ["score", "title", "description", "link"],
-      colWidths: [8, 50, 50]
+      head: ["score", "treat", "title", "link", "description"],
+      colWidths: [8, 8, 70, 60, 50]
     }) as HorizontalTable;
     for (const item of items) {
       table.push([
         chalk.blue(item.score),
+        item.treat.name,
         item.title,
-        item.description || "",
-        item.link || ""
+        item.link || "",
+        item.description || ""
       ]);
     }
     return table.toString();

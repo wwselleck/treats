@@ -33,6 +33,7 @@ export interface SerializedTreatItem {
   score: number;
   description?: string;
   link?: string;
+  treat: Pick<SerializedTreat, "name">;
 }
 
 export function serializeTreat(treat: Treat): SerializedTreat {
@@ -44,14 +45,20 @@ export function serializeTreat(treat: Treat): SerializedTreat {
   };
 }
 
-export function serializeTreatItem(item: TreatItem): SerializedTreatItem {
+export function serializeTreatItem(
+  item: TreatItem,
+  treat: Treat
+): SerializedTreatItem {
   return {
     id: item.id,
     idTreat: item.idTreat,
     title: item.title,
     description: item.description,
     score: item.score,
-    link: item.link
+    link: item.link,
+    treat: {
+      name: treat.name
+    }
   };
 }
 

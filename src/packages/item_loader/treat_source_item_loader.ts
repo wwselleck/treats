@@ -77,6 +77,15 @@ class PluginTreatSourceItemLoader {
 
     const items = await treatSource.value.loadItems(config);
 
-    return items;
+    if (isError(items)) {
+      return items;
+    }
+
+    const itemsWithId = items.value.map(i => ({
+      ...i,
+      idTreatSource: treatSourceEntity.id
+    }));
+
+    return ok(itemsWithId);
   }
 }

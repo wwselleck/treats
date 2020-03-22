@@ -1,9 +1,5 @@
 import { Result, ok, error, isError } from "../types/result";
-import {
-  TreatSourceConfigOptions,
-  TreatSourceConfig,
-  TreatSourceItem
-} from "../core";
+import { TreatSourceConfigOptions, TreatSourceConfig, Item } from "../core";
 import {
   PluginDefinition,
   PluginDefinitionTreatSource,
@@ -63,9 +59,7 @@ export class PluginTreatSource {
     this.configOptions = configOptions;
   }
 
-  async loadItems(
-    config?: TreatSourceConfig
-  ): Promise<Result<Array<TreatSourceItem>>> {
+  async loadItems(config?: TreatSourceConfig): Promise<Result<Array<Item>>> {
     const _loadItems = this.definition.loadItems;
     try {
       const items = await _loadItems(config, this.pluginConfig);
