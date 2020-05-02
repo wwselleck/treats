@@ -42,7 +42,7 @@ const TreatItemTable = {
         item.treat.name,
         item.title,
         item.link || "",
-        item.description ? item.description.slice(0, 200) : ""
+        item.description ? item.description.substring(0, 200) : ""
       ]);
     }
     return table.toString();

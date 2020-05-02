@@ -244,7 +244,8 @@ Just a dummy, builtin Treat Source for testing purposes
 > Once again, everything only needs to be functional when tested with the Example Treat Source.
 
 ### Milestone 3
-- [ ] RSS Treat Source (MVP)
-- [ ] Twitch Treat Source (MVP)
-- [ ] Reddit Treat Source (MVP)
+- [x] Twitch Treat Source (MVP - Live streams returned with any scoring system)
+- [x] Reddit Treat Source (MVP - Hot posts returned with any scoring system)
 
+### Milestone 4
+Tracking progress via Issues now

@@ -1,7 +1,11 @@
 import { Item } from "../item";
 
-export interface TreatSourceItem extends Item {
+export interface TreatSourceItem<InfoType = any> extends Item<InfoType> {
   idTreatSource: string;
+}
+
+export enum TreatSourceItemInfoType {
+  String = "String"
 }
 
 export enum TreatSourceType {
@@ -9,7 +13,7 @@ export enum TreatSourceType {
 }
 
 export interface TreatSourceConfig {
-  [optionName: string]: string | number | Array<string>;
+  [optionName: string]: any;
 }
 
 export type TreatSourceConfigOptions = {

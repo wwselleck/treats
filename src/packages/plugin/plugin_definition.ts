@@ -1,16 +1,21 @@
 import * as t from "io-ts";
 
-import { TreatSourceConfigOptionType } from "../core";
+import { TreatSourceConfigOptionType, TreatSourceItemInfoType } from "../core";
 
 /**
  * These types are how the _creator_ of a plugin defines
  * the plugin. Outside of the PluginService, plugin functionality
  * will be accessed through wrapper objects.
  */
+
 const PluginDefinitionTreatSourceConfigOptionType = t.union([
   t.literal(TreatSourceConfigOptionType.String),
   t.literal(TreatSourceConfigOptionType.Boolean)
 ]);
+
+const PluginDefinitionTreatSourceItemInfoType = t.literal(
+  TreatSourceItemInfoType.String
+);
 
 const PluginDefinitionTreatSourceConfigOption = t.intersection([
   t.type({
@@ -27,9 +32,15 @@ const PluginDefinitionTreatSourceConfigOptions = t.record(
   PluginDefinitionTreatSourceConfigOption
 );
 
+const PluginDefinitionTreatSourceItemInfo = t.record(
+  t.string,
+  PluginDefinitionTreatSourceItemInfoType
+);
+
 const PluginDefinitionTreatSource = t.type({
   name: t.string,
   configOptions: PluginDefinitionTreatSourceConfigOptions,
+  itemInfo: PluginDefinitionTreatSourceItemInfo,
   loadItems: t.Function
 });
 
