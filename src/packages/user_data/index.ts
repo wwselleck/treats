@@ -4,6 +4,7 @@ import path = require("path");
 import fs = require("fs");
 import util = require("util");
 import { Config } from "../config";
+import { Modifier } from "../core";
 
 function absolutePath(relativePath: string) {
   return path.resolve(Config.DATA_PATH, relativePath);
@@ -13,6 +14,7 @@ export interface UserTreat {
   name: string;
   config: Record<string, any>;
   idTreatSource: string;
+  modifiers?: Array<Modifier>;
 }
 
 export interface UserTreatData {

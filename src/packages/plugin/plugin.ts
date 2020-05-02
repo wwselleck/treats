@@ -3,7 +3,7 @@ import { TreatSourceConfigOptions, TreatSourceConfig, Item } from "../core";
 import {
   PluginDefinition,
   PluginDefinitionTreatSource,
-  PluginConfig
+  PluginConfig,
 } from "./plugin_definition";
 
 export class Plugin {
@@ -45,7 +45,7 @@ export class PluginTreatSource {
   private pluginConfig: PluginConfig;
 
   name: string;
-  configOptions: TreatSourceConfigOptions;
+  configOptions?: TreatSourceConfigOptions;
 
   constructor(
     definition: PluginDefinitionTreatSource,

@@ -1,6 +1,6 @@
 import * as t from "io-ts";
 
-import { TreatSourceConfigOptionType, TreatSourceItemInfoType } from "../core";
+import { TreatSourceConfigOptionType } from "../core";
 
 /**
  * These types are how the _creator_ of a plugin defines
@@ -10,21 +10,17 @@ import { TreatSourceConfigOptionType, TreatSourceItemInfoType } from "../core";
 
 const PluginDefinitionTreatSourceConfigOptionType = t.union([
   t.literal(TreatSourceConfigOptionType.String),
-  t.literal(TreatSourceConfigOptionType.Boolean)
+  t.literal(TreatSourceConfigOptionType.Boolean),
 ]);
-
-const PluginDefinitionTreatSourceItemInfoType = t.literal(
-  TreatSourceItemInfoType.String
-);
 
 const PluginDefinitionTreatSourceConfigOption = t.intersection([
   t.type({
     optionName: t.string,
-    optionType: PluginDefinitionTreatSourceConfigOptionType
+    optionType: PluginDefinitionTreatSourceConfigOptionType,
   }),
   t.partial({
-    isRequired: t.union([t.boolean, t.undefined])
-  })
+    isRequired: t.union([t.boolean, t.undefined]),
+  }),
 ]);
 
 const PluginDefinitionTreatSourceConfigOptions = t.record(
@@ -32,21 +28,19 @@ const PluginDefinitionTreatSourceConfigOptions = t.record(
   PluginDefinitionTreatSourceConfigOption
 );
 
-const PluginDefinitionTreatSourceItemInfo = t.record(
-  t.string,
-  PluginDefinitionTreatSourceItemInfoType
-);
-
-const PluginDefinitionTreatSource = t.type({
-  name: t.string,
-  configOptions: PluginDefinitionTreatSourceConfigOptions,
-  itemInfo: PluginDefinitionTreatSourceItemInfo,
-  loadItems: t.Function
-});
+const PluginDefinitionTreatSource = t.intersection([
+  t.type({
+    name: t.string,
+    loadItems: t.Function,
+  }),
+  t.partial({
+    configOptions: PluginDefinitionTreatSourceConfigOptions,
+  }),
+]);
 
 export const PluginDefinition = t.type({
   name: t.string,
-  treatSources: t.record(t.string, PluginDefinitionTreatSource)
+  treatSources: t.record(t.string, PluginDefinitionTreatSource),
 });
 
 export type PluginConfig = any;

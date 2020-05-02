@@ -4,12 +4,8 @@ export interface TreatSourceItem<InfoType = any> extends Item<InfoType> {
   idTreatSource: string;
 }
 
-export enum TreatSourceItemInfoType {
-  String = "String"
-}
-
 export enum TreatSourceType {
-  Plugin = "plugin"
+  Plugin = "plugin",
 }
 
 export interface TreatSourceConfig {
@@ -28,7 +24,7 @@ export interface TreatSourceConfigOption {
 
 export enum TreatSourceConfigOptionType {
   String = "String",
-  Boolean = "Boolean"
+  Boolean = "Boolean",
 }
 
 export interface BaseTreatSource {

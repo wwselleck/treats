@@ -1,8 +1,4 @@
-import {
-  Item,
-  TreatSourceConfigOptionType,
-  TreatSourceItemInfoType
-} from "../../core";
+import { Item } from "../../core";
 import { PluginDefinition } from "../../plugin";
 import { TwitchAPI, Stream } from "./twitch_api";
 import { ScoringPipeline, ArrayPositionPipe } from "../../item_scoring";
@@ -21,10 +17,6 @@ const TwitchPlugin: PluginDefinition = {
   treatSources: {
     Twitch: {
       name: "Twitch",
-      configOptions: {},
-      itemInfo: {
-        streamerName: TreatSourceItemInfoType.String
-      },
       async loadItems(config, pluginConfig: TwitchPluginConfig) {
         const api = new TwitchAPI(pluginConfig);
         const liveStreams = await api.getLiveFollows();
@@ -32,9 +24,9 @@ const TwitchPlugin: PluginDefinition = {
         return new ScoringPipeline<Item<ItemInfo>>([ArrayPositionPipe]).score(
           items
         );
-      }
-    }
-  }
+      },
+    },
+  },
 };
 
 function mapStreamToItem(stream: Stream): Item<ItemInfo> {
@@ -44,9 +36,6 @@ function mapStreamToItem(stream: Stream): Item<ItemInfo> {
     link: `https://twitch.tv/${stream.user_name}`,
     date: new Date(),
     score: 0,
-    info: {
-      streamerName: stream.user_name
-    }
   };
 }
 
