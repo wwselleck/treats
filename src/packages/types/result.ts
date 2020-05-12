@@ -17,16 +17,43 @@ export function isError<T>(r: Result<T>): r is ResultError {
   return r._tag === "Error";
 }
 
+export const map = <T, R = T>(fn: (val: T) => Result<R>) => (
+  vals: Array<T>
+): Result<Array<R>> => {
+  let newVals = [];
+  for (let val of vals) {
+    let newVal = fn(val);
+
+    if (isError(newVal)) {
+      return error(new Error(`Map resulted in error ${newVal.error}`));
+    }
+
+    newVals.push(newVal.value);
+  }
+
+  return ok(newVals);
+};
+
 export function ok<T>(value: T): Ok<T> {
   return {
     _tag: "Ok",
-    value
+    value,
   };
 }
 
 export function error(e: Error): ResultError {
   return {
     _tag: "Error",
-    error: e
+    error: e,
   };
 }
+
+export const pipe = <T>(fns: Array<(result: T) => Result<T>>) => (value: T) => {
+  let val: Result<T> = ok(value);
+  for (const fn of fns) {
+    if (isOk(val)) {
+      val = fn(val.value);
+    }
+  }
+  return val;
+};

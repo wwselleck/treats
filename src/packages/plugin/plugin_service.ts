@@ -89,7 +89,7 @@ async function createPluginInstances(
   configs: Record<string, PluginConfig>
 ) {
   return pluginsDefinitions
-    .map(mp => {
+    .map((mp) => {
       const config = configs[mp.name];
       return new Plugin(mp, config);
     })
@@ -109,7 +109,7 @@ async function getPluginPathsFromDirectory(directoryPath: string) {
 
   return possiblePluginFileNames
     .filter(isPluginFileName)
-    .map(f => path.resolve(directoryPath, f));
+    .map((f) => path.resolve(directoryPath, f));
 }
 
 async function getPluginPathsFromDirectories(directoryPaths: Array<string>) {
@@ -132,7 +132,7 @@ export function isPluginFileName(fileName: string) {
 // https://stackoverflow.com/questions/5827612/node-js-fs-readdir-recursive-directory-search
 async function getFiles(dir: string): Promise<Array<string>> {
   const dirents = await util.promisify(fs.readdir)(dir, {
-    withFileTypes: true
+    withFileTypes: true,
   });
 
   const files = [];

@@ -19,6 +19,7 @@ services:
       - REDDIT_REFRESH_TOKEN
       - TWITCH_CLIENT_ID
       - TWITCH_TOKEN
+      - TWITCH_USERNAME
     image: app_builder
     depends_on:
       - app_builder

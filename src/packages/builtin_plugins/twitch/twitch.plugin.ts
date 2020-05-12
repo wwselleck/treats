@@ -1,11 +1,12 @@
 import { Item } from "../../core";
 import { PluginDefinition } from "../../plugin";
-import { TwitchAPI, Stream } from "./twitch_api";
+import * as TwitchAPI from "./twitch_api";
 import { ScoringPipeline, ArrayPositionPipe } from "../../item_scoring";
 
 interface TwitchPluginConfig {
   clientId: string;
   token: string;
+  username: string;
 }
 
 interface ItemInfo {
@@ -18,7 +19,7 @@ const TwitchPlugin: PluginDefinition = {
     Twitch: {
       name: "Twitch",
       async loadItems(config, pluginConfig: TwitchPluginConfig) {
-        const api = new TwitchAPI(pluginConfig);
+        const api = new TwitchAPI.TwitchAPI(pluginConfig);
         const liveStreams = await api.getLiveFollows();
         const items = liveStreams.map(mapStreamToItem);
         return new ScoringPipeline<Item<ItemInfo>>([ArrayPositionPipe]).score(
@@ -29,7 +30,7 @@ const TwitchPlugin: PluginDefinition = {
   },
 };
 
-function mapStreamToItem(stream: Stream): Item<ItemInfo> {
+function mapStreamToItem(stream: TwitchAPI.Stream): Item<ItemInfo> {
   return {
     id: stream.id,
     title: `${stream.user_name}: ${stream.title}`,

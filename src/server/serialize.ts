@@ -3,14 +3,14 @@ import {
   TreatItem,
   TreatSource,
   TreatSourceType,
-  TreatSourceConfigOptions
+  TreatSourceConfigOptions,
 } from "../packages/core";
 
 export interface SerializedTreat {
   id: string;
-  idTreatSource: string;
   name: string;
   config: Record<string, any> | null;
+  treatSource: SerializedTreatSource;
 }
 
 export interface SerializedTreatInput {
@@ -39,9 +39,9 @@ export interface SerializedTreatItem {
 export function serializeTreat(treat: Treat): SerializedTreat {
   return {
     id: treat.id,
-    idTreatSource: treat.idTreatSource,
     name: treat.name,
-    config: treat.config
+    config: treat.config,
+    treatSource: serializeTreatSource(treat.treatSource),
   };
 }
 
@@ -57,8 +57,8 @@ export function serializeTreatItem(
     score: item.score,
     link: item.link,
     treat: {
-      name: treat.name
-    }
+      name: treat.name,
+    },
   };
 }
 
@@ -69,6 +69,6 @@ export function serializeTreatSource(
     id: source.id,
     type: source.type,
     name: source.name,
-    configOptions: source.configOptions
+    configOptions: source.configOptions,
   };
 }

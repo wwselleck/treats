@@ -1,15 +1,12 @@
-import { Result, ok, isError, isOk } from "../types/result";
+import { Result, ok, isError, map } from "../types/result";
 
-import { Treat, TreatItem, TreatSourceItem } from "../core";
+import { Treat, TreatItem, TreatSourceItem, Item, Modifier } from "../core";
 import { PluginService } from "../plugin";
 import { TreatSourceItemLoader } from "./treat_source_item_loader";
-import { applyModifiersAll } from "./apply_modifier";
+import { applyModifiers } from "../modify";
 
-class TreatItemSorter {
-  static sort(items: Array<TreatItem>) {
-    const sortedTreatItems = items.sort((i1, i2) => i2.score - i1.score);
-    return sortedTreatItems;
-  }
+function sort(items: Array<TreatItem>) {
+  return items.sort((i1, i2) => i2.score - i1.score);
 }
 
 export class TreatItemLoader {
@@ -29,20 +26,18 @@ export class TreatItemLoader {
       return treatSourceItems;
     }
 
-    const modifiedItems = modifiers
-      ? applyModifiersAll(treatSourceItems.value, modifiers)
-      : treatSourceItems;
+    const modifiedItems = map<TreatSourceItem>(applyModifiers(modifiers))(
+      treatSourceItems.value
+    );
 
     if (isError(modifiedItems)) {
-      console.log("HERERERE");
-      console.log(modifiedItems.error);
       return modifiedItems;
     }
 
     const treatItems = modifiedItems.value.map((i) =>
-      treatItemFromTreatSourceItem(treat, i)
+      fromTreatSourceItem(treat, i)
     );
-    return ok(TreatItemSorter.sort(treatItems));
+    return ok(sort(treatItems));
   }
 
   async loadAll(treats: Array<Treat>): Promise<Result<Array<TreatItem>>> {
@@ -54,11 +49,11 @@ export class TreatItemLoader {
       }
       items = items.concat(_items.value);
     }
-    return ok(TreatItemSorter.sort(items));
+    return ok(sort(items));
   }
 }
 
-function treatItemFromTreatSourceItem(
+function fromTreatSourceItem(
   treat: Treat,
   treatSourceItem: TreatSourceItem
 ): TreatItem {

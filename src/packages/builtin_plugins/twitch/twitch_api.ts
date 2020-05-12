@@ -19,24 +19,41 @@ export interface Stream {
   type: "live";
 }
 
-interface TwitchAPIOptions {
+interface Config {
   clientId: string;
   token: string;
+  username: string;
 }
+
 export class TwitchAPI {
   axiosClient: AxiosInstance;
-  constructor(options: TwitchAPIOptions) {
+  krakenClient: AxiosInstance;
+  username: string;
+
+  constructor({ clientId, token, username }: Config) {
+    this.username = username;
     this.axiosClient = axios.create({
       baseURL: "https://api.twitch.tv/helix",
       headers: {
-        Authorization: `Bearer ${options.token}`,
-        "Client-ID": options.clientId
-      }
+        Authorization: `Bearer ${token}`,
+        "Client-ID": clientId,
+      },
+    });
+
+    // The /users endpoint for helix doesn't allow use from
+    // app access tokens, so relying on kraken for now
+    this.krakenClient = axios.create({
+      baseURL: "https://api.twitch.tv/kraken",
+      headers: {
+        "Client-ID": clientId,
+        Accept: "application/vnd.twitchtv.v5+json",
+      },
     });
 
     this.axiosClient.interceptors.response.use(
-      res => res,
-      error => {
+      (res) => res,
+      (error) => {
+        console.log(error);
         return Promise.reject(
           new Error(
             `Twitch API error: StatusCode=${error.response.status} Message=${error.response.data.message}`
@@ -47,29 +64,36 @@ export class TwitchAPI {
   }
 
   async getLiveFollows(): Promise<Array<Stream>> {
-    const user = await this.getAuthedUser();
-    const follows = await this.getFollows(user);
-    const streams = await this.getStreams(follows.map(f => f.to_id));
-    const liveStreams = streams.filter(s => s.type === "live");
+    const userID = await this.getUserID();
+    console.log(userID);
+    const follows = await this.getFollows(userID);
+    const streams = await this.getStreams(follows.map((f) => f.to_id));
+    const liveStreams = streams.filter((s) => s.type === "live");
     console.log(liveStreams);
     return liveStreams;
   }
 
-  async getAuthedUser() {
-    return (await this.axiosClient.get("/users")).data.data[0];
+  async getUserID() {
+    return (
+      await this.krakenClient.get("/users", {
+        params: {
+          login: this.username,
+        },
+      })
+    ).data?.users[0]?._id;
   }
 
-  async getFollows(user: User): Promise<Array<Follow>> {
+  async getFollows(userID: string): Promise<Array<Follow>> {
     let follows: Array<any> = [];
     let hasMore = true;
     let cursor;
     while (hasMore) {
       const pageFollows: any = await this.axiosClient.get("/users/follows", {
         params: {
-          from_id: user.id,
+          from_id: userID,
           first: 100,
-          after: cursor || ""
-        }
+          after: cursor || "",
+        },
       });
       follows = follows.concat(pageFollows.data.data);
       if (pageFollows.data.pagination.cursor) {
@@ -90,8 +114,8 @@ export class TwitchAPI {
       const newStreams = await this.axiosClient.get("/streams", {
         params: {
           user_id: batchUserIds,
-          first: 100
-        }
+          first: 100,
+        },
       });
       streams = streams.concat(newStreams.data.data);
       i = i + batchSize;
@@ -99,3 +123,4 @@ export class TwitchAPI {
     return streams;
   }
 }
+

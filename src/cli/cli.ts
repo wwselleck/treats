@@ -1,40 +1,39 @@
 import commander = require("commander");
 import chalk = require("chalk");
-const inquirer = require("inquirer");
+import inquirer = require("inquirer");
 import Table, { HorizontalTable } from "cli-table3";
 import { TreatsAPI } from "./api";
 import {
   TreatSourceConfigOptionType,
   TreatSourceConfigOption,
   TreatSourceConfigOptions,
-  TreatConfig
 } from "../packages/core";
 
 import {
   SerializedTreat,
   SerializedTreatInput,
   SerializedTreatItem,
-  SerializedTreatSource
+  SerializedTreatSource,
 } from "../server";
 
 const TreatTable = {
   toString(treats: Array<SerializedTreat>) {
     const table = new Table({
-      head: ["id", "name", "config"]
+      head: ["id", "name", "config"],
     }) as HorizontalTable;
 
     for (const treat of treats) {
       table.push([treat.id, treat.name, JSON.stringify(treat.config)]);
     }
     return table.toString();
-  }
+  },
 };
 
 const TreatItemTable = {
   toString(items: Array<SerializedTreatItem>) {
     const table: HorizontalTable = new Table({
       head: ["score", "treat", "title", "link", "description"],
-      colWidths: [8, 8, 70, 60, 50]
+      colWidths: [8, 8, 70, 60, 50],
     }) as HorizontalTable;
     for (const item of items) {
       table.push([
@@ -42,11 +41,11 @@ const TreatItemTable = {
         item.treat.name,
         item.title,
         item.link || "",
-        item.description ? item.description.substring(0, 200) : ""
+        item.description ? item.description.substring(0, 200) : "",
       ]);
     }
     return table.toString();
-  }
+  },
 };
 
 const TreatCreatePrompt = {
@@ -56,8 +55,8 @@ const TreatCreatePrompt = {
     const basicQuestions = [
       {
         type: "input",
-        name: "name"
-      }
+        name: "name",
+      },
     ];
     const { name } = await inquirer.prompt(basicQuestions);
 
@@ -67,13 +66,13 @@ const TreatCreatePrompt = {
     }
 
     return { idTreatSource: treatSource.id, name, config };
-  }
+  },
 };
 const TreatConfigPrompt = {
   async render(
     configOptions: TreatSourceConfigOptions
   ): Promise<SerializedTreat["config"]> {
-    const questions = Object.values(configOptions).map(o => {
+    const questions = Object.values(configOptions).map((o) => {
       if (o.optionType === TreatSourceConfigOptionType.String) {
         return TreatConfigPrompt.questionForString(o);
       } else if (o.optionType === TreatSourceConfigOptionType.Boolean) {
@@ -89,24 +88,24 @@ const TreatConfigPrompt = {
   questionForString(configOption: TreatSourceConfigOption) {
     return {
       type: "input",
-      name: configOption.optionName
+      name: configOption.optionName,
     };
   },
   questionForBoolean(configOption: TreatSourceConfigOption) {
     return {
       type: "confirm",
-      name: configOption.optionName
+      name: configOption.optionName,
     };
-  }
+  },
 };
 
 const ItemsCommand = {
   register(program: commander.Command) {
-    program.command("items [idTreat]").action(async idTreat => {
+    program.command("items [idTreat]").action(async (idTreat) => {
       const items = await new TreatsAPI().getItems(idTreat);
       console.log(TreatItemTable.toString(items));
     });
-  }
+  },
 };
 
 const ListCommand = {
@@ -115,7 +114,7 @@ const ListCommand = {
       const treats = await new TreatsAPI().getTreats();
       console.log(TreatTable.toString(treats));
     });
-  }
+  },
 };
 
 const CreateCommand = {
@@ -126,19 +125,19 @@ const CreateCommand = {
         {
           type: "list",
           name: "idTreatSource",
-          choices: treatSources.map(ts => ({
+          choices: treatSources.map((ts) => ({
             name: `${ts.name} (${ts.id})`,
-            value: ts.id
-          }))
-        }
+            value: ts.id,
+          })),
+        },
       ]);
 
-      const treatSource = treatSources.find(ts => ts.id === idTreatSource)!;
+      const treatSource = treatSources.find((ts) => ts.id === idTreatSource)!;
       const treatInput = await TreatCreatePrompt.render(treatSource);
       const result = await new TreatsAPI().createTreat(treatInput);
       console.log(result);
     });
-  }
+  },
 };
 
 export function run() {

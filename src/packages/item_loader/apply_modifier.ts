@@ -1,12 +1,10 @@
-import { ok, error, isOk, isError, Result } from "../types/result";
+import { ok, error, isOk, isError, Result, pipe } from "../types/result";
 import { Item, Modifier, KeywordsItemMatch } from "../core";
 
 type Matcher = (item: Item) => boolean;
 
 const Matchers = {
   keywords: ({ keywords }: KeywordsItemMatch) => (item: Item): boolean => {
-    console.log(keywords);
-    console.log(item.title);
     return keywords.some((keyword) => item.title.includes(keyword));
   },
 };
@@ -44,10 +42,9 @@ export function getModificationApplier<T extends Item>(
   }
 }
 
-export function applyModifier<T extends Item>(
-  item: T,
-  modifier: Modifier
-): Result<T> {
+export const applyModifier = (modifier: Modifier) => <T extends Item>(
+  item: T
+): Result<T> => {
   const matcher = getMatcher(modifier);
   if (!matcher) {
     return error(
@@ -71,23 +68,14 @@ export function applyModifier<T extends Item>(
   }
 
   return ok(item);
-}
+};
 
-export function applyModifiersAll<T extends Item>(
-  items: Array<T>,
-  modifiers: Array<Modifier>
-): Result<Array<T>> {
-  let newItems = items;
-  for (const modifier of modifiers) {
-    const _items = [];
-    for (const item of items) {
-      const newItem = applyModifier(item, modifier);
-      if (isError(newItem)) {
-        return newItem;
-      }
-      _items.push(newItem.value);
-    }
-    newItems = _items;
+export const applyModifiers = <T extends Item>(modifiers?: Array<Modifier>) => (
+  item: T
+): Result<T> => {
+  if (!modifiers) {
+    return ok(item);
   }
-  return ok(newItems);
-}
+  return pipe<T>(modifiers.map((m) => applyModifier(m)))(item);
+};
+
