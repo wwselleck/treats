@@ -1,6 +1,6 @@
 import express = require("express");
+import * as E from "fp-ts/lib/Either";
 import { TreatSourceService } from "../packages/core";
-import { isError } from "../packages/types/result";
 
 export function createTreatSourceRouter(
   treatSourceService: TreatSourceService
@@ -9,11 +9,10 @@ export function createTreatSourceRouter(
     .Router()
     .get("/", async (_, res: express.Response) => {
       const sources = await treatSourceService.all();
-      if (isError(sources)) {
-        throw sources.error;
+      if (E.isLeft(sources)) {
+        throw sources.left;
       }
-      res.json(sources.value);
-      console.log("hi");
+      res.json(sources.right);
     })
     .get(
       "/:idTreatSource",

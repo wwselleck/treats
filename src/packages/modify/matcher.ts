@@ -1,5 +1,6 @@
-import { ok, error, Result, pipe } from "../types/result";
-import { Item, Modifier, ItemMatch, KeywordsItemMatch } from "../core";
+import * as E from "fp-ts/lib/Either";
+
+import { Item, ItemMatch, KeywordsItemMatch } from "../core";
 
 type Matcher = (item: Item) => boolean;
 
@@ -20,15 +21,18 @@ export function getMatcher(itemMatch: ItemMatch): Matcher | null {
   }
 }
 
-export function match(item: Item, itemMatch: ItemMatch): Result<boolean> {
+export function match(
+  item: Item,
+  itemMatch: ItemMatch
+): E.Either<Error, boolean> {
   const matcher = getMatcher(itemMatch);
   if (!matcher) {
-    return error(
+    return E.left(
       new Error(
         `Could not apply modifier for invalid matcher ${itemMatch.kind}`
       )
     );
   }
-  return ok(matcher(item));
+  return E.right(matcher(item));
 }
 

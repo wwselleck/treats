@@ -1,4 +1,4 @@
-import { Result, ok, error, isError } from "../types/result";
+import * as E from "fp-ts/lib/Either";
 import { TreatSourceConfigOptions, TreatSourceConfig, Item } from "../core";
 import {
   PluginDefinition,
@@ -17,17 +17,17 @@ export class Plugin {
     this.name = name;
   }
 
-  treatSource(name: string): Result<PluginTreatSource> {
+  treatSource(name: string): E.Either<Error, PluginTreatSource> {
     const def = this.modPlugin.treatSources[name];
     if (!def) {
-      return error(
+      return E.left(
         new Error(
           `Plugin ${this.name} does not contain treatSource with name ${name}`
         )
       );
     }
 
-    return ok(new PluginTreatSource(def, this.config));
+    return E.right(new PluginTreatSource(def, this.config));
   }
 
   treatSources(): Array<PluginTreatSource> {
@@ -59,15 +59,16 @@ export class PluginTreatSource {
     this.configOptions = configOptions;
   }
 
-  async loadItems(config?: TreatSourceConfig): Promise<Result<Array<Item>>> {
+  async loadItems(
+    config?: TreatSourceConfig
+  ): Promise<E.Either<Error, Array<Item>>> {
     const _loadItems = this.definition.loadItems;
     try {
       const items = await _loadItems(config, this.pluginConfig);
-      return ok(items);
+      return E.right(items);
     } catch (e) {
-      console.log("hhhhhh");
       console.log(e);
-      return error(e);
+      return E.left(e);
     }
   }
 }

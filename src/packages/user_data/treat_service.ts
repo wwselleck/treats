@@ -1,10 +1,10 @@
-import { ok, error, isOk, isError, Result } from "../types/result";
+import * as E from "fp-ts/lib/Either";
 import {
   Treat,
   TreatProps,
   TreatService,
   TreatSourceService,
-  NotFoundError
+  NotFoundError,
 } from "../core";
 import { logger } from "../logger";
 import { UserData, UserTreat } from ".";
@@ -16,15 +16,15 @@ function createTreatId(userTreat: UserTreat) {
 async function mapUserTreatToTreat(
   userTreat: UserTreat,
   treatSourceService: TreatSourceService
-): Promise<Result<Treat>> {
+): Promise<E.Either<Error, Treat>> {
   const treatSource = await treatSourceService.get(userTreat.idTreatSource);
-  if (isError(treatSource)) {
+  if (E.isLeft(treatSource)) {
     return treatSource;
   }
-  return ok({
+  return E.right({
     ...userTreat,
     id: createTreatId(userTreat),
-    treatSource: treatSource.value
+    treatSource: treatSource.right,
   });
 }
 
@@ -34,14 +34,14 @@ export class UserDataTreatService implements TreatService {
 
   async get(id: string) {
     const treats = await this.all();
-    if (isError(treats)) {
+    if (E.isLeft(treats)) {
       return treats;
     }
-    const treat = treats.value.find(t => t.id === id);
+    const treat = treats.right.find((t) => t.id === id);
     if (treat) {
-      return ok(treat);
+      return E.right(treat);
     } else {
-      return error(new NotFoundError());
+      return E.left(new NotFoundError());
     }
   }
 
@@ -52,23 +52,23 @@ export class UserDataTreatService implements TreatService {
     const treats: Array<Treat> = [];
     for (const ut of userTreats) {
       const treat = await mapUserTreatToTreat(ut, this.treatSourceService);
-      if (isOk(treat)) {
-        treats.push(treat.value);
+      if (E.isRight(treat)) {
+        treats.push(treat.right);
       } else {
-        logger.error(treat.error);
+        logger.error(treat.left);
       }
     }
-    return ok(treats);
+    return E.right(treats);
   }
 
-  async create(treatProps: TreatProps) {
+  async create(treatProps: TreatProps): Promise<E.Either<Error, Treat>> {
     const userTreats = await UserData.readJSON(
       UserDataTreatService.TreatsFileName
     );
 
     const newData = {
       ...userTreats,
-      treats: [...userTreats.treats, treatProps]
+      treats: [...userTreats.treats, treatProps],
     };
 
     const treat = await mapUserTreatToTreat(
@@ -76,12 +76,12 @@ export class UserDataTreatService implements TreatService {
       this.treatSourceService
     );
 
-    if (isError(treat)) {
+    if (E.isLeft(treat)) {
       return treat;
     }
 
     UserData.writeJSON(UserDataTreatService.TreatsFileName, newData);
 
-    return ok(treat.value);
+    return treat;
   }
 }

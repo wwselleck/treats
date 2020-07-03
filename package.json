@@ -28,7 +28,7 @@
     "commander": "^4.1.1",
     "express": "^4.16.4",
     "express-pino-logger": "^4.0.0",
-    "fp-ts": "^2.5.3",
+    "fp-ts": "^2.6.7",
     "inquirer": "^7.0.6",
     "io-ts": "^2.1.2",
     "mongoose": "^5.8.10",

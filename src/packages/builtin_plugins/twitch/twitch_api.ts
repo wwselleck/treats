@@ -65,11 +65,9 @@ export class TwitchAPI {
 
   async getLiveFollows(): Promise<Array<Stream>> {
     const userID = await this.getUserID();
-    console.log(userID);
     const follows = await this.getFollows(userID);
     const streams = await this.getStreams(follows.map((f) => f.to_id));
     const liveStreams = streams.filter((s) => s.type === "live");
-    console.log(liveStreams);
     return liveStreams;
   }
 

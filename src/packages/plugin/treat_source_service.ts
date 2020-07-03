@@ -1,5 +1,5 @@
+import * as E from "fp-ts/lib/Either";
 import { TreatSource, TreatSourceType, TreatSourceService } from "../core";
-import { Result, ok, isError } from "../types/result";
 import { PluginService } from "./plugin_service";
 import { Plugin, PluginTreatSource } from "./plugin";
 
@@ -10,39 +10,39 @@ export class PluginTreatSourceService implements TreatSourceService {
     this.pluginService = pluginService;
   }
 
-  async get(id: string) {
+  async get(id: string): Promise<E.Either<Error, TreatSource>> {
     const { pluginName, pluginTreatSourceName } = parseIdPluginTreatSource(id);
 
     const plugin = await this.pluginService.get(pluginName);
-    if (isError(plugin)) {
+    if (E.isLeft(plugin)) {
       return plugin;
     }
 
-    const pluginTreatSource = plugin.value.treatSource(pluginTreatSourceName);
+    const pluginTreatSource = plugin.right.treatSource(pluginTreatSourceName);
 
-    if (isError(pluginTreatSource)) {
+    if (E.isLeft(pluginTreatSource)) {
       return pluginTreatSource;
     }
 
-    return ok(
-      treatSourceFromPluginTreatSource(plugin.value, pluginTreatSource.value)
+    return E.right(
+      treatSourceFromPluginTreatSource(plugin.right, pluginTreatSource.right)
     );
   }
 
-  async all(): Promise<Result<Array<TreatSource>>> {
+  async all(): Promise<E.Either<Error, Array<TreatSource>>> {
     const plugins = await this.pluginService.all();
 
-    if (isError(plugins)) {
+    if (E.isLeft(plugins)) {
       return plugins;
     }
 
-    const treatSources = plugins.value
+    const treatSources = plugins.right
       .map((p: Plugin) => ({
         plugin: p,
-        treatSources: p.treatSources()
+        treatSources: p.treatSources(),
       }))
-      .map(obj =>
-        obj.treatSources.map(ts =>
+      .map((obj) =>
+        obj.treatSources.map((ts) =>
           treatSourceFromPluginTreatSource(obj.plugin, ts)
         )
       )
@@ -51,7 +51,7 @@ export class PluginTreatSourceService implements TreatSourceService {
         return acc;
       }, [] as Array<TreatSource>);
 
-    return ok(treatSources);
+    return E.right(treatSources);
   }
 }
 
@@ -65,8 +65,8 @@ export function treatSourceFromPluginTreatSource(
     configOptions: pluginTreatSource.configOptions,
     type: TreatSourceType.Plugin,
     info: {
-      pluginName: plugin.name
-    }
+      pluginName: plugin.name,
+    },
   };
 }
 
@@ -81,6 +81,6 @@ function parseIdPluginTreatSource(idPluginTreatSource: string) {
   const [pluginName, pluginTreatSourceName] = idPluginTreatSource.split("_");
   return {
     pluginName,
-    pluginTreatSourceName
+    pluginTreatSourceName,
   };
 }

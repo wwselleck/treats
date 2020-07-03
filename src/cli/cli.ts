@@ -16,6 +16,21 @@ import {
   SerializedTreatSource,
 } from "../server";
 
+function colorizeScore(score: number) {
+  if (score === 1000) {
+    return chalk.magentaBright(score);
+  } else if (score >= 900) {
+    return chalk.cyanBright(score);
+  } else if (score >= 700) {
+    return chalk.blueBright(score);
+  } else if (score >= 500) {
+    return chalk.green(score);
+  } else if (score >= 300) {
+    return chalk.yellow(score);
+  } else {
+    return chalk.white(score);
+  }
+}
 const TreatTable = {
   toString(treats: Array<SerializedTreat>) {
     const table = new Table({
@@ -32,16 +47,32 @@ const TreatTable = {
 const TreatItemTable = {
   toString(items: Array<SerializedTreatItem>) {
     const table: HorizontalTable = new Table({
-      head: ["score", "treat", "title", "link", "description"],
-      colWidths: [8, 8, 70, 60, 50],
+      chars: {
+        top: "",
+        "top-mid": "",
+        "top-left": "",
+        "top-right": "",
+        bottom: "",
+        "bottom-mid": "",
+        "bottom-left": "",
+        "bottom-right": "",
+        left: "",
+        "left-mid": "",
+        mid: "",
+        "mid-mid": "",
+        right: "",
+        "right-mid": "",
+        middle: " ",
+      },
+      style: { "padding-left": 0, "padding-right": 0 },
+      head: ["score", "treat", "title"],
+      colWidths: [8, 8],
     }) as HorizontalTable;
     for (const item of items) {
       table.push([
-        chalk.blue(item.score),
+        colorizeScore(item.score),
         item.treat.name,
-        item.title,
-        item.link || "",
-        item.description ? item.description.substring(0, 200) : "",
+        `${item.title}\n${item.link}\n`,
       ]);
     }
     return table.toString();

@@ -1,10 +1,10 @@
-import { Result, ok, error, isError } from "../../types/result";
+import * as E from "fp-ts/lib/Either";
 import {
   Treat,
   TreatService,
   TreatProps,
   TreatSourceService,
-  NotFoundError
+  NotFoundError,
 } from "../../core";
 import { logger } from "../../logger";
 import { DB, TreatModel } from "..";
@@ -19,11 +19,11 @@ export class MongoTreatService implements TreatService {
 
   async get(id: string) {
     const treat = await this.options.db.Treat.findOne({
-      _id: id
+      _id: id,
     });
 
     if (!treat) {
-      return error(new NotFoundError());
+      return E.left(new NotFoundError());
     }
 
     const treatEntity = await treatModelToEntity(
@@ -42,13 +42,13 @@ export class MongoTreatService implements TreatService {
         treat,
         this.options.treatSourceService
       );
-      if (isError(treatEntity)) {
+      if (E.isLeft(treatEntity)) {
         logger.warn("Skipping look here");
       } else {
-        treatEntities.push(treatEntity.value);
+        treatEntities.push(treatEntity.right);
       }
     }
-    return ok(treatEntities);
+    return E.right(treatEntities);
   }
 
   async create(props: TreatProps) {
@@ -63,7 +63,7 @@ export class MongoTreatService implements TreatService {
       this.options.treatSourceService
     );
 
-    if (isError(treatEntity)) {
+    if (E.isLeft(treatEntity)) {
       return treatEntity;
     }
     treatModel.save();
@@ -74,17 +74,17 @@ export class MongoTreatService implements TreatService {
 async function treatModelToEntity(
   model: TreatModel,
   treatSourceService: TreatSourceService
-): Promise<Result<Treat>> {
+): Promise<E.Either<Error, Treat>> {
   const treatSource = await treatSourceService.get(model.idTreatSource);
-  if (isError(treatSource)) {
-    return error(new Error("Invalid treatSource"));
+  if (E.isLeft(treatSource)) {
+    return E.left(new Error("Invalid treatSource"));
   }
 
-  return ok({
+  return E.right({
     id: model._id,
     idTreatSource: model.idTreatSource,
     name: model.name,
     config: model.config,
-    treatSource: treatSource.value
+    treatSource: treatSource.right,
   });
 }

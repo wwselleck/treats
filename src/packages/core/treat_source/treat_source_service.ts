@@ -1,7 +1,7 @@
-import { Result } from "../../types/result";
+import * as E from "fp-ts/lib/Either";
 import { TreatSource } from ".";
 
 export interface TreatSourceService {
-  get(id: string): Promise<Result<TreatSource>>;
-  all(): Promise<Result<Array<TreatSource>>>;
+  get(id: string): Promise<E.Either<Error, TreatSource>>;
+  all(): Promise<E.Either<Error, Array<TreatSource>>>;
 }

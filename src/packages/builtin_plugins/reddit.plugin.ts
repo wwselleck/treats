@@ -18,8 +18,8 @@ const RedditPlugin: PluginDefinition = {
       configOptions: {
         test: {
           optionName: "Test",
-          optionType: TreatSourceConfigOptionType.String
-        }
+          optionType: TreatSourceConfigOptionType.String,
+        },
       },
       async loadItems(_: any, pluginConfig: RedditPluginConfig) {
         const client = new RedditAPI(pluginConfig);
@@ -27,12 +27,12 @@ const RedditPlugin: PluginDefinition = {
 
         const items = submissions.map(mapSubmissionToItem);
         const scoredItems = new ScoringPipeline<Item>([
-          ArrayPositionPipe
+          ArrayPositionPipe,
         ]).score(items);
         return scoredItems;
-      }
-    }
-  }
+      },
+    },
+  },
 };
 
 function mapSubmissionToItem(s: snoowrap.Submission) {
@@ -43,7 +43,7 @@ function mapSubmissionToItem(s: snoowrap.Submission) {
     title: s.title,
     description: s.selftext,
     link: `https://reddit.com${s.permalink}`,
-    score: 500
+    score: 500,
   };
 }
 
@@ -78,7 +78,7 @@ class RedditAPI {
   constructor(config: RedditAPIConfig) {
     this.client = new snoowrap({
       ...config,
-      userAgent: "treats_builtin/reddit"
+      userAgent: "treats_builtin/reddit",
     });
   }
 

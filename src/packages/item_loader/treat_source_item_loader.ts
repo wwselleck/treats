@@ -1,11 +1,11 @@
-import { Result, ok, isError } from "../types/result";
+import * as E from "fp-ts/lib/Either";
 import {
   TreatSource,
   TreatSourceType,
   TreatSourceItem,
   TreatSourceConfig,
   PluginTreatSource as PluginTreatSourceType,
-  Scoreable
+  Scoreable,
 } from "../core";
 import { PluginService } from "../plugin";
 import { logger } from "../logger";
@@ -19,7 +19,7 @@ export class TreatSourceItemLoader {
   async load(
     treatSource: TreatSource,
     config: TreatSourceConfig
-  ): Promise<Result<Array<TreatSourceItem>>> {
+  ): Promise<E.Either<Error, Array<TreatSourceItem>>> {
     let items;
     if (treatSource.type === TreatSourceType.Plugin) {
       items = await new PluginTreatSourceItemLoader(this.pluginService).load(
@@ -30,23 +30,23 @@ export class TreatSourceItemLoader {
       throw new Error("heeee");
     }
 
-    if (isError(items)) {
+    if (E.isLeft(items)) {
       logger.error(
         {
-          error: items.error.toString()
+          error: items.left.toString(),
         },
         `Error loading items for source ${treatSource.name}`
       );
       return items;
     }
-    return ok(items.value.map(roundScore));
+    return E.right(items.right.map(roundScore));
   }
 }
 
 function roundScore<T extends Scoreable>(i: T): T {
   return {
     ...i,
-    score: Math.round(i.score)
+    score: Math.round(i.score),
   };
 }
 
@@ -60,32 +60,32 @@ class PluginTreatSourceItemLoader {
   async load(
     treatSourceEntity: PluginTreatSourceType,
     config?: TreatSourceConfig
-  ): Promise<Result<Array<TreatSourceItem>>> {
+  ): Promise<E.Either<Error, Array<TreatSourceItem>>> {
     const plugin = await this.pluginService.get(
       treatSourceEntity.info.pluginName
     );
 
-    if (isError(plugin)) {
+    if (E.isLeft(plugin)) {
       return plugin;
     }
 
-    const treatSource = plugin.value.treatSource(treatSourceEntity.name);
+    const treatSource = plugin.right.treatSource(treatSourceEntity.name);
 
-    if (isError(treatSource)) {
+    if (E.isLeft(treatSource)) {
       return treatSource;
     }
 
-    const items = await treatSource.value.loadItems(config);
+    const items = await treatSource.right.loadItems(config);
 
-    if (isError(items)) {
+    if (E.isLeft(items)) {
       return items;
     }
 
-    const itemsWithId = items.value.map(i => ({
+    const itemsWithId = items.right.map((i) => ({
       ...i,
-      idTreatSource: treatSourceEntity.id
+      idTreatSource: treatSourceEntity.id,
     }));
 
-    return ok(itemsWithId);
+    return E.right(itemsWithId);
   }
 }

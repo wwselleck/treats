@@ -1,6 +1,6 @@
-import { Result, ok, isError, map } from "../types/result";
+import { isLeft, isRight, Either, left, right, Right } from "fp-ts/lib/Either";
 
-import { Treat, TreatItem, TreatSourceItem, Item, Modifier } from "../core";
+import { Treat, TreatItem, TreatSourceItem } from "../core";
 import { PluginService } from "../plugin";
 import { TreatSourceItemLoader } from "./treat_source_item_loader";
 import { applyModifiers } from "../modify";
@@ -15,41 +15,40 @@ export class TreatItemLoader {
     this.pluginService = pluginService;
   }
 
-  async load(treat: Treat): Promise<Result<Array<TreatItem>>> {
+  async load(treat: Treat): Promise<Either<Error, Array<TreatItem>>> {
     const { treatSource, config, modifiers } = treat;
 
     let treatSourceItems = await new TreatSourceItemLoader(
       this.pluginService
     ).load(treatSource, config);
 
-    if (isError(treatSourceItems)) {
+    if (isLeft(treatSourceItems)) {
       return treatSourceItems;
     }
 
-    const modifiedItems = map<TreatSourceItem>(applyModifiers(modifiers))(
-      treatSourceItems.value
-    );
+    const modifiedItems = treatSourceItems.right
+      .map(applyModifiers(modifiers))
+      .filter((item): item is Right<TreatSourceItem> => {
+        return isRight(item);
+      })
+      .map((item) => item.right);
 
-    if (isError(modifiedItems)) {
-      return modifiedItems;
-    }
-
-    const treatItems = modifiedItems.value.map((i) =>
-      fromTreatSourceItem(treat, i)
-    );
-    return ok(sort(treatItems));
+    const treatItems = modifiedItems.map((i) => fromTreatSourceItem(treat, i));
+    return right(sort(treatItems));
   }
 
-  async loadAll(treats: Array<Treat>): Promise<Result<Array<TreatItem>>> {
+  async loadAll(
+    treats: Array<Treat>
+  ): Promise<Either<Error, Array<TreatItem>>> {
     let items: Array<TreatItem> = [];
     for (let treat of treats) {
       const _items = await this.load(treat);
-      if (isError(_items)) {
+      if (isLeft(_items)) {
         return _items;
       }
-      items = items.concat(_items.value);
+      items = items.concat(_items.right);
     }
-    return ok(sort(items));
+    return right(sort(items));
   }
 }
 

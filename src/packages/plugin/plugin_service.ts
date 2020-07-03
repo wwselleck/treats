@@ -3,10 +3,9 @@ import fs = require("fs");
 import path = require("path");
 
 import { PathReporter } from "io-ts/lib/PathReporter";
-import { isLeft } from "fp-ts/lib/Either";
+import { isLeft, isRight, Either, left, right } from "fp-ts/lib/Either";
 
 import { logger } from "../logger";
-import { Result, ok, error, isOk } from "../types/result";
 import { UserData } from "../user_data";
 import { PluginDefinition, PluginConfig } from "./plugin_definition";
 import { Plugin } from "./plugin";
@@ -31,10 +30,10 @@ export class PluginService {
     const pluginDefinitions = pluginPaths
       .map(loadPluginDefinition)
       .reduce((acc, curr) => {
-        if (isOk(curr)) {
-          acc.push(curr.value);
+        if (isRight(curr)) {
+          acc.push(curr.right);
         } else {
-          logger.warn(`Could not load plugin definition ${curr.error}`);
+          logger.warn(`Could not load plugin definition ${curr.left}`);
         }
         return acc;
       }, [] as Array<PluginDefinition>);
@@ -45,27 +44,29 @@ export class PluginService {
     return new PluginService(options, plugins, configs);
   }
 
-  async get(name: string): Promise<Result<Plugin>> {
+  async get(name: string): Promise<Either<Error, Plugin>> {
     const plugin = this.plugins[name];
 
     if (!plugin) {
-      return error(new Error(`Plugin not found ${name}`));
+      return left(new Error(`Plugin not found ${name}`));
     }
 
-    return ok(plugin);
+    return right(plugin);
   }
 
-  async all(): Promise<Result<Array<Plugin>>> {
-    return ok(Object.values(this.plugins));
+  async all(): Promise<Either<Error, Array<Plugin>>> {
+    return right(Object.values(this.plugins));
   }
 }
 
-function loadPluginDefinition(pluginPath: string): Result<PluginDefinition> {
+function loadPluginDefinition(
+  pluginPath: string
+): Either<Error, PluginDefinition> {
   try {
     const mod: unknown = require(pluginPath);
     const pluginDefinition = PluginDefinition.decode(mod);
     if (isLeft(pluginDefinition)) {
-      return error(
+      return left(
         new Error(
           `Plugin ${pluginPath} provided an incorrect definition ${PathReporter.report(
             pluginDefinition
@@ -73,13 +74,13 @@ function loadPluginDefinition(pluginPath: string): Result<PluginDefinition> {
         )
       );
     }
-    return ok(pluginDefinition.right);
+    return right(pluginDefinition.right);
   } catch (e) {
     throw new Error(`Error requiring plugin ${pluginPath} ${e}`);
   }
 }
 
-function loadPluginConfigs(): Record<string, PluginConfig> {
+function loadPluginConfigs(): Promise<Record<string, PluginConfig>> {
   const mod = UserData.readJS("plugin_config.js");
   return mod;
 }
