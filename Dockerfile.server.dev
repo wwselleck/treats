@@ -1,0 +1,10 @@
+FROM node:latest
+
+WORKDIR /usr/app
+
+COPY package.json .
+COPY yarn.lock .
+
+COPY src/server/package.json ./src/server/package.json
+
+RUN yarn install --pure-lockfile --non-interactive

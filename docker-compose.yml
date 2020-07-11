@@ -1,16 +1,19 @@
 version: '3'
 services:
-  app_builder:
-    build: .
-    image: app_builder
-    command: yarn build:watch
+  server_builder:
+    build:
+      context: .
+      dockerfile: Dockerfile.server.dev
+    image: server_builder
+    command: yarn workspace @wwselleck/treats-server build:watch
     volumes:
-      - .:/usr/app
+      - .:$REPO_MOUNT_POINT
       # Tells container to ignore the mounted node_modules on the host,
       # use the one installed in the container
       # https://jdlm.info/articles/2016/03/06/lessons-building-node-app-docker.html
-      - /usr/app/node_modules
-  app:
+      - $REPO_MOUNT_POINT/node_modules
+      - $REPO_MOUNT_POINT/src/server/node_modules
+  server:
     environment:
       - DB_URI=mongo
       - DB_PORT=27017
@@ -20,19 +23,20 @@ services:
       - TWITCH_CLIENT_ID
       - TWITCH_TOKEN
       - TWITCH_USERNAME
-    image: app_builder
+    image: server_builder
     depends_on:
-      - app_builder
-    command: yarn dev:server
+      - server_builder
+    command: yarn workspace @wwselleck/treats-server dev:server
     ports:
       - "3218:3218"
     volumes:
-      - ./dist:/usr/app/dist
+      - .:$REPO_MOUNT_POINT
       - ./dev/.treats:/root/.treats
       # Tells container to ignore the mounted node_modules on the host,
       # use the one installed in the container
       # https://jdlm.info/articles/2016/03/06/lessons-building-node-app-docker.html
-      - /usr/app/node_modules
+      - $REPO_MOUNT_POINT/node_modules
+      - $REPO_MOUNT_POINT/src/server/node_modules
   mongo:
     container_name: mongo
     image: mongo
