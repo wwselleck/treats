@@ -4,7 +4,7 @@ import {
   TreatSource,
   TreatSourceType,
   TreatSourceConfigOptions,
-} from "../packages/core";
+} from "./core";
 
 export interface SerializedTreat {
   id: string;

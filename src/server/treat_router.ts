@@ -1,15 +1,11 @@
 import express = require("express");
 import * as E from "fp-ts/lib/Either";
 
-import {
-  TreatSourceService,
-  TreatService,
-  NotFoundError,
-} from "../packages/core";
-import { TreatItemLoader } from "../packages/item_loader";
+import { TreatSourceService, TreatService, NotFoundError } from "./core";
+import { TreatItemLoader } from "./item_loader";
 import { serializeTreat, serializeTreatItem } from "./serialize";
 import { ExpressResponseHelper } from "./express_helper";
-import { indexArray } from "../packages/util";
+import { indexArray } from "./util";
 
 interface TreatRouterConfig {
   treatSourceService: TreatSourceService;
@@ -25,6 +21,7 @@ export function createTreatRouter({
   const TreatSourceRouter = express
     .Router()
     .get("/", async (_, res: express.Response) => {
+      console.log("here");
       const treats = await treatService.all();
       if (E.isRight(treats)) {
         res.json(treats.right.map(serializeTreat));

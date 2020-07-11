@@ -1,6 +1,6 @@
 import express = require("express");
 import * as E from "fp-ts/lib/Either";
-import { TreatSourceService } from "../packages/core";
+import { TreatSourceService } from "./core";
 
 export function createTreatSourceRouter(
   treatSourceService: TreatSourceService

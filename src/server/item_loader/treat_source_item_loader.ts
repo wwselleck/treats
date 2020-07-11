@@ -1,4 +1,7 @@
 import * as E from "fp-ts/lib/Either";
+import * as Arr from "fp-ts/lib/Array";
+
+import { pipe } from "fp-ts/lib/pipeable";
 import {
   TreatSource,
   TreatSourceType,
@@ -20,26 +23,33 @@ export class TreatSourceItemLoader {
     treatSource: TreatSource,
     config: TreatSourceConfig
   ): Promise<E.Either<Error, Array<TreatSourceItem>>> {
-    let items;
+    let items: E.Either<Error, Array<TreatSourceItem>> | undefined;
     if (treatSource.type === TreatSourceType.Plugin) {
-      items = await new PluginTreatSourceItemLoader(this.pluginService).load(
-        treatSource,
-        config
-      );
+      const loader = new PluginTreatSourceItemLoader(this.pluginService);
+      items = (await loader.load(treatSource, config)) as E.Either<
+        Error,
+        Array<TreatSourceItem>
+      >;
     } else {
       throw new Error("heeee");
     }
 
-    if (E.isLeft(items)) {
-      logger.error(
-        {
-          error: items.left.toString(),
+    return pipe(
+      items,
+      E.map((items) => Arr.map(roundScore)(items)),
+      E.fold(
+        (error: Error) => {
+          logger.error(
+            {
+              error: error.toString(),
+            },
+            `Error loading items for source ${treatSource.name}`
+          );
+          return E.left(error);
         },
-        `Error loading items for source ${treatSource.name}`
-      );
-      return items;
-    }
-    return E.right(items.right.map(roundScore));
+        (x) => E.right(x)
+      )
+    );
   }
 }
 

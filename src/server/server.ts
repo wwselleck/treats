@@ -2,8 +2,8 @@ import express = require("express");
 import bodyParser = require("body-parser");
 import pino = require("express-pino-logger");
 
-import { TreatSourceService, TreatService } from "../packages/core";
-import { TreatItemLoader } from "../packages/item_loader";
+import { TreatSourceService, TreatService } from "./core";
+import { TreatItemLoader } from "./item_loader";
 
 import { createTreatSourceRouter } from "./treat_source_router";
 import { createTreatRouter } from "./treat_router";
@@ -25,7 +25,7 @@ export async function start(config: TreatsServerConfig) {
     treatSourceService,
     treatService,
     treatItemLoader,
-    port = 3218
+    port = 3218,
   } = config;
 
   const app = express();

@@ -3,9 +3,9 @@ import {
   SerializedTreatItem,
   SerializedTreat,
   SerializedTreatInput,
-  SerializedTreatSource
-} from "../server";
-import { Config } from "../packages/config";
+  SerializedTreatSource,
+} from "../serialize";
+import { Config } from "../config";
 
 export class TreatsAPI {
   origin: string = `http://localhost:${Config.SERVER_PORT}`;
@@ -15,7 +15,7 @@ export class TreatsAPI {
   constructor() {
     this.axiosClient = axios.create({
       baseURL: this.origin,
-      responseType: "json"
+      responseType: "json",
     });
   }
 

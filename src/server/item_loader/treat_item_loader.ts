@@ -21,6 +21,7 @@ export class TreatItemLoader {
     let treatSourceItems = await new TreatSourceItemLoader(
       this.pluginService
     ).load(treatSource, config);
+    console.log(treatSourceItems);
 
     if (isLeft(treatSourceItems)) {
       return treatSourceItems;
