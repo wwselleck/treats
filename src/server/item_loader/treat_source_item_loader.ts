@@ -22,34 +22,16 @@ export class TreatSourceItemLoader {
   async load(
     treatSource: TreatSource,
     config: TreatSourceConfig
-  ): Promise<E.Either<Error, Array<TreatSourceItem>>> {
-    let items: E.Either<Error, Array<TreatSourceItem>> | undefined;
+  ): Promise<Array<TreatSourceItem>> {
+    let items;
     if (treatSource.type === TreatSourceType.Plugin) {
       const loader = new PluginTreatSourceItemLoader(this.pluginService);
-      items = (await loader.load(treatSource, config)) as E.Either<
-        Error,
-        Array<TreatSourceItem>
-      >;
+      items = await loader.load(treatSource, config);
     } else {
       throw new Error("heeee");
     }
 
-    return pipe(
-      items,
-      E.map((items) => Arr.map(roundScore)(items)),
-      E.fold(
-        (error: Error) => {
-          logger.error(
-            {
-              error: error.toString(),
-            },
-            `Error loading items for source ${treatSource.name}`
-          );
-          return E.left(error);
-        },
-        (x) => E.right(x)
-      )
-    );
+    return items.map(roundScore);
   }
 }
 
@@ -70,32 +52,20 @@ class PluginTreatSourceItemLoader {
   async load(
     treatSourceEntity: PluginTreatSourceType,
     config?: TreatSourceConfig
-  ): Promise<E.Either<Error, Array<TreatSourceItem>>> {
+  ): Promise<Array<TreatSourceItem>> {
     const plugin = await this.pluginService.get(
       treatSourceEntity.info.pluginName
     );
 
-    if (E.isLeft(plugin)) {
-      return plugin;
-    }
+    const treatSource = plugin.treatSource(treatSourceEntity.name);
 
-    const treatSource = plugin.right.treatSource(treatSourceEntity.name);
+    const items = await treatSource.loadItems(config);
 
-    if (E.isLeft(treatSource)) {
-      return treatSource;
-    }
-
-    const items = await treatSource.right.loadItems(config);
-
-    if (E.isLeft(items)) {
-      return items;
-    }
-
-    const itemsWithId = items.right.map((i) => ({
+    const itemsWithId = items.map((i) => ({
       ...i,
       idTreatSource: treatSourceEntity.id,
     }));
 
-    return E.right(itemsWithId);
+    return itemsWithId;
   }
 }

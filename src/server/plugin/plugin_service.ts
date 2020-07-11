@@ -1,17 +1,16 @@
+import * as E from "fp-ts/lib/Either";
 import util = require("util");
 import fs = require("fs");
 import path = require("path");
 
 import { PathReporter } from "io-ts/lib/PathReporter";
-import { isLeft, isRight, Either, left, right } from "fp-ts/lib/Either";
 
 import { logger } from "../logger";
 import { UserData } from "../user_data";
 import { PluginDefinition, PluginConfig } from "./plugin_definition";
 import { Plugin } from "./plugin";
 
-// Loads and provides access to plugins
-// that's it
+// Loads and provides access to plugins that's it
 interface PluginServiceOptions {
   moduleDirectories: Array<string>;
 }
@@ -28,15 +27,15 @@ export class PluginService {
     );
     logger.info({ pluginPaths }, "Attempting to load plugins from paths");
     const pluginDefinitions = pluginPaths
-      .map(loadPluginDefinition)
-      .reduce((acc, curr) => {
-        if (isRight(curr)) {
-          acc.push(curr.right);
-        } else {
-          logger.warn(`Could not load plugin definition ${curr.left}`);
+      .map((path) => {
+        try {
+          return loadPluginDefinition(path);
+        } catch {
+          logger.error(`Could not load plugin definition ${path}`);
+          return null;
         }
-        return acc;
-      }, [] as Array<PluginDefinition>);
+      })
+      .filter((x): x is PluginDefinition => !!x);
 
     const configs = await loadPluginConfigs();
     const plugins = await createPluginInstances(pluginDefinitions, configs);
@@ -44,37 +43,33 @@ export class PluginService {
     return new PluginService(options, plugins, configs);
   }
 
-  async get(name: string): Promise<Either<Error, Plugin>> {
+  async get(name: string): Promise<Plugin> {
     const plugin = this.plugins[name];
 
     if (!plugin) {
-      return left(new Error(`Plugin not found ${name}`));
+      throw new Error(`Plugin not found ${name}`);
     }
 
-    return right(plugin);
+    return plugin;
   }
 
-  async all(): Promise<Either<Error, Array<Plugin>>> {
-    return right(Object.values(this.plugins));
+  async all(): Promise<Array<Plugin>> {
+    return Object.values(this.plugins);
   }
 }
 
-function loadPluginDefinition(
-  pluginPath: string
-): Either<Error, PluginDefinition> {
+function loadPluginDefinition(pluginPath: string): PluginDefinition {
   try {
     const mod: unknown = require(pluginPath);
     const pluginDefinition = PluginDefinition.decode(mod);
-    if (isLeft(pluginDefinition)) {
-      return left(
-        new Error(
-          `Plugin ${pluginPath} provided an incorrect definition ${PathReporter.report(
-            pluginDefinition
-          )}`
-        )
+    if (E.isLeft(pluginDefinition)) {
+      throw new Error(
+        `Plugin ${pluginPath} provided an incorrect definition ${PathReporter.report(
+          pluginDefinition
+        )}`
       );
     }
-    return right(pluginDefinition.right);
+    return pluginDefinition.right;
   } catch (e) {
     throw new Error(`Error requiring plugin ${pluginPath} ${e}`);
   }

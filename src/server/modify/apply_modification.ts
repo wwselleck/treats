@@ -1,5 +1,3 @@
-import * as E from "fp-ts/lib/Either";
-
 import { Item, Modification } from "../core";
 
 type ModificationApplier<T extends Item> = (item: T) => T;
@@ -30,12 +28,10 @@ export function applyModification<T extends Item>(
 ) {
   const modificationApplier = getModificationApplier<T>(modification);
   if (!modificationApplier) {
-    return E.left(
-      new Error(
-        `Could not apply modifier for invalid modification ${modification.kind}`
-      )
+    throw new Error(
+      `Could not apply modifier for invalid modification ${modification.kind}`
     );
   }
 
-  return E.right(modificationApplier(item));
+  return modificationApplier(item);
 }

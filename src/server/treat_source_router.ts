@@ -1,5 +1,4 @@
 import express = require("express");
-import * as E from "fp-ts/lib/Either";
 import { TreatSourceService } from "./core";
 
 export function createTreatSourceRouter(
@@ -9,10 +8,7 @@ export function createTreatSourceRouter(
     .Router()
     .get("/", async (_, res: express.Response) => {
       const sources = await treatSourceService.all();
-      if (E.isLeft(sources)) {
-        throw sources.left;
-      }
-      res.json(sources.right);
+      res.json(sources);
     })
     .get(
       "/:idTreatSource",

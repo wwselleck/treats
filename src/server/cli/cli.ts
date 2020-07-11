@@ -7,14 +7,14 @@ import {
   TreatSourceConfigOptionType,
   TreatSourceConfigOption,
   TreatSourceConfigOptions,
-} from "../packages/core";
+} from "../core";
 
 import {
   SerializedTreat,
   SerializedTreatInput,
   SerializedTreatItem,
   SerializedTreatSource,
-} from "../server";
+} from "../serialize";
 
 function colorizeScore(score: number) {
   if (score === 1000) {

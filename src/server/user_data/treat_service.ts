@@ -1,4 +1,3 @@
-import * as E from "fp-ts/lib/Either";
 import {
   Treat,
   TreatProps,
@@ -16,16 +15,13 @@ function createTreatId(userTreat: UserTreat) {
 async function mapUserTreatToTreat(
   userTreat: UserTreat,
   treatSourceService: TreatSourceService
-): Promise<E.Either<Error, Treat>> {
+): Promise<Treat> {
   const treatSource = await treatSourceService.get(userTreat.idTreatSource);
-  if (E.isLeft(treatSource)) {
-    return treatSource;
-  }
-  return E.right({
+  return {
     ...userTreat,
     id: createTreatId(userTreat),
-    treatSource: treatSource.right,
-  });
+    treatSource: treatSource,
+  };
 }
 
 export class UserDataTreatService implements TreatService {
@@ -34,14 +30,11 @@ export class UserDataTreatService implements TreatService {
 
   async get(id: string) {
     const treats = await this.all();
-    if (E.isLeft(treats)) {
-      return treats;
-    }
-    const treat = treats.right.find((t) => t.id === id);
+    const treat = treats.find((t) => t.id === id);
     if (treat) {
-      return E.right(treat);
+      return treat;
     } else {
-      return E.left(new NotFoundError());
+      throw new NotFoundError();
     }
   }
 
@@ -52,16 +45,16 @@ export class UserDataTreatService implements TreatService {
     const treats: Array<Treat> = [];
     for (const ut of userTreats) {
       const treat = await mapUserTreatToTreat(ut, this.treatSourceService);
-      if (E.isRight(treat)) {
-        treats.push(treat.right);
+      if (treat) {
+        treats.push(treat);
       } else {
-        logger.error(treat.left);
+        logger.error(treat);
       }
     }
-    return E.right(treats);
+    return treats;
   }
 
-  async create(treatProps: TreatProps): Promise<E.Either<Error, Treat>> {
+  async create(treatProps: TreatProps): Promise<Treat> {
     const userTreats = await UserData.readJSON(
       UserDataTreatService.TreatsFileName
     );
@@ -76,7 +69,7 @@ export class UserDataTreatService implements TreatService {
       this.treatSourceService
     );
 
-    if (E.isLeft(treat)) {
+    if (treat) {
       return treat;
     }
 

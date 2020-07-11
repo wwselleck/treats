@@ -1,5 +1,3 @@
-import * as E from "fp-ts/lib/Either";
-
 import { Item, ItemMatch, KeywordsItemMatch } from "../core";
 
 type Matcher = (item: Item) => boolean;
@@ -21,18 +19,10 @@ export function getMatcher(itemMatch: ItemMatch): Matcher | null {
   }
 }
 
-export function match(
-  item: Item,
-  itemMatch: ItemMatch
-): E.Either<Error, boolean> {
+export function match(item: Item, itemMatch: ItemMatch): boolean {
   const matcher = getMatcher(itemMatch);
   if (!matcher) {
-    return E.left(
-      new Error(
-        `Could not apply modifier for invalid matcher ${itemMatch.kind}`
-      )
-    );
+    throw new Error(`invalid matcher ${itemMatch.kind}`);
   }
-  return E.right(matcher(item));
+  return matcher(item);
 }
-

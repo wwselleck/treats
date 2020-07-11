@@ -1,4 +1,3 @@
-import * as E from "fp-ts/lib/Either";
 import { TreatSource, TreatSourceType, TreatSourceService } from "../core";
 import { PluginService } from "./plugin_service";
 import { Plugin, PluginTreatSource } from "./plugin";
@@ -10,33 +9,19 @@ export class PluginTreatSourceService implements TreatSourceService {
     this.pluginService = pluginService;
   }
 
-  async get(id: string): Promise<E.Either<Error, TreatSource>> {
+  async get(id: string): Promise<TreatSource> {
     const { pluginName, pluginTreatSourceName } = parseIdPluginTreatSource(id);
 
     const plugin = await this.pluginService.get(pluginName);
-    if (E.isLeft(plugin)) {
-      return plugin;
-    }
+    const pluginTreatSource = plugin.treatSource(pluginTreatSourceName);
 
-    const pluginTreatSource = plugin.right.treatSource(pluginTreatSourceName);
-
-    if (E.isLeft(pluginTreatSource)) {
-      return pluginTreatSource;
-    }
-
-    return E.right(
-      treatSourceFromPluginTreatSource(plugin.right, pluginTreatSource.right)
-    );
+    return treatSourceFromPluginTreatSource(plugin, pluginTreatSource);
   }
 
-  async all(): Promise<E.Either<Error, Array<TreatSource>>> {
+  async all(): Promise<Array<TreatSource>> {
     const plugins = await this.pluginService.all();
 
-    if (E.isLeft(plugins)) {
-      return plugins;
-    }
-
-    const treatSources = plugins.right
+    const treatSources = plugins
       .map((p: Plugin) => ({
         plugin: p,
         treatSources: p.treatSources(),
@@ -51,7 +36,7 @@ export class PluginTreatSourceService implements TreatSourceService {
         return acc;
       }, [] as Array<TreatSource>);
 
-    return E.right(treatSources);
+    return treatSources;
   }
 }
 

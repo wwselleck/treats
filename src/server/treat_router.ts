@@ -1,7 +1,6 @@
 import express = require("express");
-import * as E from "fp-ts/lib/Either";
 
-import { TreatSourceService, TreatService, NotFoundError } from "./core";
+import { Treat, TreatSourceService, TreatService, NotFoundError } from "./core";
 import { TreatItemLoader } from "./item_loader";
 import { serializeTreat, serializeTreatItem } from "./serialize";
 import { ExpressResponseHelper } from "./express_helper";
@@ -23,10 +22,8 @@ export function createTreatRouter({
     .get("/", async (_, res: express.Response) => {
       console.log("here");
       const treats = await treatService.all();
-      if (E.isRight(treats)) {
-        res.json(treats.right.map(serializeTreat));
-        return;
-      }
+      res.json(treats.map(serializeTreat));
+      return;
     })
     .post("/", async (req: express.Request, res: express.Response) => {
       const { idTreatSource, name, config } = req.body;
@@ -41,8 +38,8 @@ export function createTreatRouter({
         name,
         config: config,
       });
-      if (E.isRight(treat)) {
-        res.json(serializeTreat(treat.right));
+      if (treat) {
+        res.json(serializeTreat(treat));
       } else {
         ExpressResponseHelper.InternalServerError(res);
         return;
@@ -51,28 +48,20 @@ export function createTreatRouter({
     .get("/all/items", async (req: express.Request, res: express.Response) => {
       const treats = await treatService.all();
 
-      if (E.isLeft(treats)) {
-        ExpressResponseHelper.InternalServerError(res);
-        return;
-      }
+      const items = await treatItemLoader.loadAll(treats);
 
-      const items = await treatItemLoader.loadAll(treats.right);
-
-      if (E.isLeft(items)) {
-        ExpressResponseHelper.InternalServerError(res);
-        return;
-      }
-
-      const indexedTreats = indexArray(treats.right, "id");
+      const indexedTreats = indexArray<Treat, "id">(treats, "id");
       res.json(
-        items.right.map((i) => serializeTreatItem(i, indexedTreats[i.idTreat]))
+        items.map((i) => serializeTreatItem(i, indexedTreats[i.idTreat]))
       );
     })
     .get("/:idTreat", async (req: express.Request, res: express.Response) => {
       const { idTreat } = req.params;
-      const treat = await treatService.get(idTreat);
-      if (E.isLeft(treat)) {
-        if (treat.left instanceof NotFoundError) {
+      try {
+        const treat = await treatService.get(idTreat);
+        res.json(treat);
+      } catch (e) {
+        if (e instanceof NotFoundError) {
           res.status(404);
           res.send();
           return;
@@ -80,24 +69,15 @@ export function createTreatRouter({
         ExpressResponseHelper.InternalServerError(res);
         return;
       }
-      res.json(treat.right);
     })
     .get(
       "/:idTreat/items",
       async (req: express.Request, res: express.Response) => {
         const { idTreat } = req.params;
         const treat = await treatService.get(idTreat);
-        if (E.isLeft(treat)) {
-          ExpressResponseHelper.InternalServerError(res);
-          return;
-        }
-        const items = await treatItemLoader.load(treat.right);
+        const items = await treatItemLoader.load(treat);
 
-        if (E.isLeft(items)) {
-          ExpressResponseHelper.InternalServerError(res);
-          return;
-        }
-        res.json(items.right.map((i) => serializeTreatItem(i, treat.right)));
+        res.json(items.map((i) => serializeTreatItem(i, treat)));
       }
     );
 

@@ -11,7 +11,7 @@ import * as TreatsServer from "./server";
 
 async function loadLocalModeDeps() {
   const pluginService = await PluginService.create({
-    moduleDirectories: [path.resolve(__dirname, "../packages/builtin_plugins")],
+    moduleDirectories: [path.resolve(__dirname, "./builtin_plugins")],
   });
   const treatSourceService = new PluginTreatSourceService(pluginService);
   const treatService = new UserDataTreatService(treatSourceService);

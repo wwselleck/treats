@@ -1,4 +1,3 @@
-import * as E from "fp-ts/lib/Either";
 import {
   Treat,
   TreatService,
@@ -6,7 +5,6 @@ import {
   TreatSourceService,
   NotFoundError,
 } from "../../core";
-import { logger } from "../../logger";
 import { DB, TreatModel } from "..";
 
 interface MongoTreatServiceOptions {
@@ -23,13 +21,14 @@ export class MongoTreatService implements TreatService {
     });
 
     if (!treat) {
-      return E.left(new NotFoundError());
+      throw new NotFoundError();
     }
 
     const treatEntity = await treatModelToEntity(
       treat,
       this.options.treatSourceService
     );
+
     return treatEntity;
   }
 
@@ -42,13 +41,9 @@ export class MongoTreatService implements TreatService {
         treat,
         this.options.treatSourceService
       );
-      if (E.isLeft(treatEntity)) {
-        logger.warn("Skipping look here");
-      } else {
-        treatEntities.push(treatEntity.right);
-      }
+      treatEntities.push(treatEntity);
     }
-    return E.right(treatEntities);
+    return treatEntities;
   }
 
   async create(props: TreatProps) {
@@ -63,10 +58,8 @@ export class MongoTreatService implements TreatService {
       this.options.treatSourceService
     );
 
-    if (E.isLeft(treatEntity)) {
-      return treatEntity;
-    }
     treatModel.save();
+
     return treatEntity;
   }
 }
@@ -74,17 +67,13 @@ export class MongoTreatService implements TreatService {
 async function treatModelToEntity(
   model: TreatModel,
   treatSourceService: TreatSourceService
-): Promise<E.Either<Error, Treat>> {
+): Promise<Treat> {
   const treatSource = await treatSourceService.get(model.idTreatSource);
-  if (E.isLeft(treatSource)) {
-    return E.left(new Error("Invalid treatSource"));
-  }
 
-  return E.right({
+  return {
     id: model._id,
-    idTreatSource: model.idTreatSource,
     name: model.name,
     config: model.config,
-    treatSource: treatSource.right,
-  });
+    treatSource: treatSource,
+  };
 }

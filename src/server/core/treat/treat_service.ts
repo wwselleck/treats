@@ -1,4 +1,3 @@
-import * as E from "fp-ts/lib/Either";
 import { Treat } from "./treat";
 
 export interface TreatProps {
@@ -9,7 +8,7 @@ export interface TreatProps {
 }
 
 export interface TreatService {
-  get(id: string): Promise<E.Either<Error, Treat>>;
-  all(): Promise<E.Either<Error, Array<Treat>>>;
-  create(props: TreatProps): Promise<E.Either<Error, Treat>>;
+  get(id: string): Promise<Treat>;
+  all(): Promise<Array<Treat>>;
+  create(props: TreatProps): Promise<Treat>;
 }
