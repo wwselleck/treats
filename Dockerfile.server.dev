@@ -5,6 +5,6 @@ WORKDIR /usr/app
 COPY package.json .
 COPY yarn.lock .
 
-COPY src/server/package.json ./src/server/package.json
+COPY packages/server/package.json ./packages/server/package.json
 
 RUN yarn install --pure-lockfile --non-interactive

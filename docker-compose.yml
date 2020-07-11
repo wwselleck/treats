@@ -12,7 +12,7 @@ services:
       # use the one installed in the container
       # https://jdlm.info/articles/2016/03/06/lessons-building-node-app-docker.html
       - $REPO_MOUNT_POINT/node_modules
-      - $REPO_MOUNT_POINT/src/server/node_modules
+      - $REPO_MOUNT_POINT/packages/server/node_modules
   server:
     environment:
       - DB_URI=mongo
@@ -36,7 +36,7 @@ services:
       # use the one installed in the container
       # https://jdlm.info/articles/2016/03/06/lessons-building-node-app-docker.html
       - $REPO_MOUNT_POINT/node_modules
-      - $REPO_MOUNT_POINT/src/server/node_modules
+      - $REPO_MOUNT_POINT/packages/server/node_modules
   mongo:
     container_name: mongo
     image: mongo
