@@ -11,6 +11,3 @@ COPY packages/core/package.json ./packages/core/package.json
 
 RUN yarn install --pure-lockfile --non-interactive
 
-RUN ls ./packages/web/node_modules
-
-

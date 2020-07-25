@@ -21,12 +21,12 @@ services:
     image: builder
     depends_on:
       - builder
-    command: npx wsrun -c dev:server
+    command: yarn workspace @treats-app/server run dev
     ports:
       - "3218:3218"
     volumes:
       - .:$REPO_MOUNT_POINT
-      - ./server/dev/.treats:/root/.treats
+      - ./packages/server/dev/.treats:/root/.treats
       # Tells container to ignore the mounted node_modules on the host,
       # use the one installed in the container
       # https://jdlm.info/articles/2016/03/06/lessons-building-node-app-docker.html
@@ -35,6 +35,8 @@ services:
     depends_on:
       - builder
     image: builder
+    environment:
+      - SERVER_PROXY=http://server:3218
     command: yarn workspace @treats-app/web run dev
     ports:
       - "1234:1234"
