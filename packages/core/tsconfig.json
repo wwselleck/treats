@@ -1,0 +1,12 @@
+{
+  "compilerOptions": {
+    "module": "commonjs",
+    "lib": ["es7"],
+    "moduleResolution": "node",
+    "strict": true,
+    "target": "es6",
+    "outDir": "dist",
+    "sourceMap": true,
+    "esModuleInterop": true
+  }
+}

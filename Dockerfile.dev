@@ -1,8 +1,16 @@
-FROM node:latest
+FROM node:12.14.0
 
 WORKDIR /usr/app
 
 COPY package.json .
 COPY yarn.lock .
 
-RUN yarn install --immutable --non-interactive
+COPY packages/server/package.json ./packages/server/package.json
+COPY packages/web/package.json ./packages/web/package.json
+COPY packages/core/package.json ./packages/core/package.json
+
+RUN yarn install --pure-lockfile --non-interactive
+
+RUN ls ./packages/web/node_modules
+
+

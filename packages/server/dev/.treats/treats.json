@@ -1,0 +1,11 @@
+{
+  "treats": [
+    {
+      "name": "LocalExampleTreat",
+      "idTreatSource": "example_treat_source",
+      "config": {
+        "exclude_c": true
+      }
+    }
+  ]
+}

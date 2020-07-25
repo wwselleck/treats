@@ -1,0 +1,1 @@
+npx wsrun -c dev

@@ -1,0 +1,17 @@
+{
+  "name": "@treats-app/cli",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc -w"
+  },
+  "dependencies": {
+    "@treats-app/core": "1.0.0",
+    "chalk": "^4.1.0",
+    "cli-table3": "^0.6.0",
+    "commander": "^5.1.0",
+    "inquirer": "^7.3.2"
+  }
+}
