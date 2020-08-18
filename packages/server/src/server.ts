@@ -3,10 +3,11 @@ import bodyParser = require("body-parser");
 import pino = require("express-pino-logger");
 
 import { TreatSourceService, TreatService } from "@treats-app/core";
-import { TreatItemLoader } from "./item_loader";
 
+import { TreatItemLoader } from "./item_loader";
 import { createTreatSourceRouter } from "./treat_source_router";
 import { createTreatRouter } from "./treat_router";
+import { coreErrorHandler } from "./middleware/core-error-handler";
 
 interface TreatsServerConfig {
   port?: number;
@@ -33,6 +34,8 @@ export async function start(config: TreatsServerConfig) {
   app.use(pino());
 
   app.use(bodyParser());
+
+  app.use(coreErrorHandler());
 
   app.use("/treatsource", createTreatSourceRouter(treatSourceService));
   app.use(

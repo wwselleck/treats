@@ -46,11 +46,7 @@ export class PluginService {
   async get(name: string): Promise<Plugin> {
     const plugin = this.plugins[name];
 
-    if (!plugin) {
-      throw new Error(`Plugin not found ${name}`);
-    }
-
-    return plugin;
+    return plugin || null;
   }
 
   async all(): Promise<Array<Plugin>> {

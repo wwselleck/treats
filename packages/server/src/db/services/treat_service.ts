@@ -2,14 +2,12 @@ import {
   Treat,
   TreatService,
   TreatProps,
-  TreatSourceService,
   NotFoundError,
 } from "@treats-app/core";
 import { DB, TreatModel } from "..";
 
 interface MongoTreatServiceOptions {
   db: DB;
-  treatSourceService: TreatSourceService;
 }
 
 export class MongoTreatService implements TreatService {
@@ -24,10 +22,7 @@ export class MongoTreatService implements TreatService {
       throw new NotFoundError();
     }
 
-    const treatEntity = await treatModelToEntity(
-      treat,
-      this.options.treatSourceService
-    );
+    const treatEntity = await treatModelToEntity(treat);
 
     return treatEntity;
   }
@@ -37,10 +32,7 @@ export class MongoTreatService implements TreatService {
 
     const treatEntities = [];
     for (const treat of treats) {
-      const treatEntity = await treatModelToEntity(
-        treat,
-        this.options.treatSourceService
-      );
+      const treatEntity = await treatModelToEntity(treat);
       treatEntities.push(treatEntity);
     }
     return treatEntities;
@@ -53,10 +45,7 @@ export class MongoTreatService implements TreatService {
     }
     const treatModel = new this.options.db.Treat(treat);
 
-    const treatEntity = await treatModelToEntity(
-      treatModel,
-      this.options.treatSourceService
-    );
+    const treatEntity = await treatModelToEntity(treatModel);
 
     treatModel.save();
 
@@ -64,16 +53,11 @@ export class MongoTreatService implements TreatService {
   }
 }
 
-async function treatModelToEntity(
-  model: TreatModel,
-  treatSourceService: TreatSourceService
-): Promise<Treat> {
-  const treatSource = await treatSourceService.get(model.idTreatSource);
-
+async function treatModelToEntity(model: TreatModel): Promise<Treat> {
   return {
     id: model._id,
+    idTreatSource: model.idTreatSource,
     name: model.name,
     config: model.config,
-    treatSource: treatSource,
   };
 }

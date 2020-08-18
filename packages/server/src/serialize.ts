@@ -8,9 +8,9 @@ import {
 
 export interface SerializedTreat {
   id: string;
+  idTreatSource: string;
   name: string;
   config: Record<string, any> | null;
-  treatSource: SerializedTreatSource;
 }
 
 export interface SerializedTreatInput {
@@ -39,9 +39,9 @@ export interface SerializedTreatItem {
 export function serializeTreat(treat: Treat): SerializedTreat {
   return {
     id: treat.id,
+    idTreatSource: treat.idTreatSource,
     name: treat.name,
     config: treat.config,
-    treatSource: serializeTreatSource(treat.treatSource),
   };
 }
 

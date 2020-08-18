@@ -2,6 +2,7 @@ import {
   TreatSourceConfigOptions,
   TreatSourceConfig,
   Item,
+  NotFoundError,
 } from "@treats-app/core";
 import {
   PluginDefinition,
@@ -21,12 +22,14 @@ export class Plugin {
   }
 
   treatSource(name: string): PluginTreatSource {
+    console.log(name);
     const def = this.modPlugin.treatSources[name];
     if (!def) {
-      new Error(
+      throw new NotFoundError(
         `Plugin ${this.name} does not contain treatSource with name ${name}`
       );
     }
+    console.log(def);
 
     return new PluginTreatSource(def, this.config);
   }

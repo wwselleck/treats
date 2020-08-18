@@ -14,9 +14,12 @@ async function loadLocalModeDeps() {
     moduleDirectories: [path.resolve(__dirname, "./builtin_plugins")],
   });
   const treatSourceService = new PluginTreatSourceService(pluginService);
-  const treatService = new UserDataTreatService(treatSourceService);
+  const treatService = new UserDataTreatService();
 
-  const treatItemLoader = new TreatItemLoader(pluginService);
+  const treatItemLoader = new TreatItemLoader(
+    pluginService,
+    treatSourceService
+  );
   return { treatSourceService, treatService, treatItemLoader };
 }
 
@@ -35,10 +38,12 @@ async function loadDeps() {
 
     const treatService = new MongoTreatService({
       db,
-      treatSourceService,
     });
 
-    const treatItemLoader = new TreatItemLoader(pluginService);
+    const treatItemLoader = new TreatItemLoader(
+      pluginService,
+      treatSourceService
+    );
 
     return { treatSourceService, treatService, treatItemLoader };
   }

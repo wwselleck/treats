@@ -13,10 +13,16 @@ export class PluginTreatSourceService implements TreatSourceService {
     this.pluginService = pluginService;
   }
 
-  async get(id: string): Promise<TreatSource> {
+  async get(id: string) {
     const { pluginName, pluginTreatSourceName } = parseIdPluginTreatSource(id);
 
     const plugin = await this.pluginService.get(pluginName);
+
+    console.log(plugin);
+    if (!plugin) {
+      return null;
+    }
+
     const pluginTreatSource = plugin.treatSource(pluginTreatSourceName);
 
     return treatSourceFromPluginTreatSource(plugin, pluginTreatSource);

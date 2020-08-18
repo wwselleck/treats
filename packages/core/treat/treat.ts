@@ -5,9 +5,9 @@ import { Item } from "../item";
 export type TreatConfig = Record<string, any>;
 export interface Treat {
   id: string;
+  idTreatSource: string;
   name: string;
   config: TreatConfig;
-  treatSource: TreatSource;
   modifiers?: Array<Modifier>;
 }
 

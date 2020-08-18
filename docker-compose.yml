@@ -21,6 +21,7 @@ services:
     image: builder
     depends_on:
       - builder
+      - mongo
     command: yarn workspace @treats-app/server run dev
     ports:
       - "3218:3218"

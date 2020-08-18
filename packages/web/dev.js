@@ -8,7 +8,7 @@ app.use(
   createProxyMiddleware("/api", {
     target: process.env.SERVER_PROXY || "http://localhost:3218",
     pathRewrite: {
-      "^/pi": "",
+      "^/api": "",
     },
   })
 );

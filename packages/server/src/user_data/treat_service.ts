@@ -2,7 +2,6 @@ import {
   Treat,
   TreatProps,
   TreatService,
-  TreatSourceService,
   NotFoundError,
 } from "@treats-app/core";
 import { logger } from "../logger";
@@ -12,21 +11,16 @@ function createTreatId(userTreat: UserTreat) {
   return `local_${userTreat.name}`;
 }
 
-async function mapUserTreatToTreat(
-  userTreat: UserTreat,
-  treatSourceService: TreatSourceService
-): Promise<Treat> {
-  const treatSource = await treatSourceService.get(userTreat.idTreatSource);
+async function mapUserTreatToTreat(userTreat: UserTreat): Promise<Treat> {
   return {
     ...userTreat,
     id: createTreatId(userTreat),
-    treatSource: treatSource,
   };
 }
 
 export class UserDataTreatService implements TreatService {
   static TreatsFileName: string = "treats.json";
-  constructor(private treatSourceService: TreatSourceService) {}
+  constructor() {}
 
   async get(id: string) {
     const treats = await this.all();
@@ -44,7 +38,7 @@ export class UserDataTreatService implements TreatService {
     ).treats;
     const treats: Array<Treat> = [];
     for (const ut of userTreats) {
-      const treat = await mapUserTreatToTreat(ut, this.treatSourceService);
+      const treat = await mapUserTreatToTreat(ut);
       if (treat) {
         treats.push(treat);
       } else {
@@ -64,10 +58,7 @@ export class UserDataTreatService implements TreatService {
       treats: [...userTreats.treats, treatProps],
     };
 
-    const treat = await mapUserTreatToTreat(
-      treatProps,
-      this.treatSourceService
-    );
+    const treat = await mapUserTreatToTreat(treatProps);
 
     if (treat) {
       return treat;

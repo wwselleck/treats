@@ -1,4 +1,9 @@
-import { Treat, TreatItem, TreatSourceItem } from "@treats-app/core";
+import {
+  Treat,
+  TreatItem,
+  TreatSourceItem,
+  TreatSourceService,
+} from "@treats-app/core";
 import { PluginService } from "../plugin";
 import { TreatSourceItemLoader } from "./treat_source_item_loader";
 import { applyModifiers } from "../modify";
@@ -10,12 +15,23 @@ function sort(items: Array<TreatItem>) {
 
 export class TreatItemLoader {
   pluginService: PluginService;
-  constructor(pluginService: PluginService) {
+  treatSourceService: TreatSourceService;
+  constructor(
+    pluginService: PluginService,
+    treatSourceService: TreatSourceService
+  ) {
     this.pluginService = pluginService;
+    this.treatSourceService = treatSourceService;
   }
 
   async load(treat: Treat): Promise<Array<TreatItem>> {
-    const { treatSource, config, modifiers } = treat;
+    const { idTreatSource, config, modifiers } = treat;
+
+    const treatSource = await this.treatSourceService.get(idTreatSource);
+
+    if (!treatSource) {
+      throw new Error("No treat source");
+    }
 
     let treatSourceItems = await new TreatSourceItemLoader(
       this.pluginService
