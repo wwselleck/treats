@@ -1,4 +1,4 @@
-# treats
+# <img width="50px" align="left" src="./meta/logo.png" style="padding-bottom: -10px"/>treats
 
 ## About
 
