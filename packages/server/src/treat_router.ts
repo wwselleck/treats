@@ -34,7 +34,7 @@ export function createTreatRouter({
       const treatSource = await treatSourceService.get(idTreatSource);
       if (!treatSource) {
         res.status(404);
-        res.send();
+        res.send(`TreatSource with id ${idTreatSource} was not found`);
         return;
       }
       const treat = await treatService.create({

@@ -18,12 +18,15 @@ export class PluginTreatSourceService implements TreatSourceService {
 
     const plugin = await this.pluginService.get(pluginName);
 
-    console.log(plugin);
     if (!plugin) {
       return null;
     }
 
     const pluginTreatSource = plugin.treatSource(pluginTreatSourceName);
+
+    if (!pluginTreatSource) {
+      return null;
+    }
 
     return treatSourceFromPluginTreatSource(plugin, pluginTreatSource);
   }

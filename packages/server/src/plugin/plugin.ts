@@ -21,15 +21,11 @@ export class Plugin {
     this.name = name;
   }
 
-  treatSource(name: string): PluginTreatSource {
-    console.log(name);
+  treatSource(name: string): PluginTreatSource | null {
     const def = this.modPlugin.treatSources[name];
     if (!def) {
-      throw new NotFoundError(
-        `Plugin ${this.name} does not contain treatSource with name ${name}`
-      );
+      return null;
     }
-    console.log(def);
 
     return new PluginTreatSource(def, this.config);
   }

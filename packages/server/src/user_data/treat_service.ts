@@ -58,13 +58,10 @@ export class UserDataTreatService implements TreatService {
       treats: [...userTreats.treats, treatProps],
     };
 
+
+    await UserData.writeJSON(UserDataTreatService.TreatsFileName, newData);
+
     const treat = await mapUserTreatToTreat(treatProps);
-
-    if (treat) {
-      return treat;
-    }
-
-    UserData.writeJSON(UserDataTreatService.TreatsFileName, newData);
 
     return treat;
   }
