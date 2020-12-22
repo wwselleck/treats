@@ -1,5 +1,30 @@
 import { Item } from "../item";
 
+export enum TreatSourceOptionType {
+  String = "String",
+  Boolean = "Boolean",
+}
+
+export interface TreatSourceSetupOption {
+  optionName: string;
+  optionType: TreatSourceOptionType;
+  isRequired: boolean;
+}
+
+export type TreatSourceSetupOptions = {
+  [optionName: string]: any;
+};
+
+export interface TreatSourceConfigOption {
+  optionName: string;
+  optionType: TreatSourceOptionType;
+  isRequired: boolean;
+}
+
+export type TreatSourceConfigOptions = {
+  [optionName: string]: any;
+};
+
 export interface TreatSourceItem<InfoType = any> extends Item<InfoType> {
   idTreatSource: string;
 }
@@ -8,29 +33,11 @@ export enum TreatSourceType {
   Plugin = "plugin",
 }
 
-export interface TreatSourceConfig {
-  [optionName: string]: any;
-}
-
-export type TreatSourceConfigOptions = {
-  [optionName: string]: TreatSourceConfigOption;
-};
-
-export interface TreatSourceConfigOption {
-  optionName: string;
-  optionType: TreatSourceConfigOptionType;
-  isRequired?: boolean;
-}
-
-export enum TreatSourceConfigOptionType {
-  String = "String",
-  Boolean = "Boolean",
-}
-
 export interface BaseTreatSource {
   id: string;
   name: string;
-  configOptions?: TreatSourceConfigOptions;
+  setup?: TreatSourceSetupOptions;
+  config?: TreatSourceConfigOptions;
   info?: any;
 }
 

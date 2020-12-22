@@ -16,6 +16,8 @@
   },
   "dependencies": {
     "@treats-app/core": "^1.0.0",
+    "@treats-app/logger": "^1.0.0",
+    "@treats-app/plugin": "^1.0.0",
     "axios": "^0.19.2",
     "body-parser": "^1.19.0",
     "chalk": "^3.0.0",

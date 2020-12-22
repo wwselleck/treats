@@ -2,26 +2,33 @@ import {
   TreatSource,
   TreatSourceType,
   TreatSourceItem,
-  TreatSourceConfig,
+  TreatSourceSetupOptions,
+  TreatSourceConfigOptions,
   PluginTreatSource as PluginTreatSourceType,
   Scoreable,
 } from "@treats-app/core";
-import { PluginService } from "../plugin";
+import { PluginService, getPluginTreatSource } from "@treats-app/plugin";
 
 export class TreatSourceItemLoader {
-  pluginService: PluginService;
+  private pluginTreatSourceItemLoader: PluginTreatSourceItemLoader;
   constructor(pluginService: PluginService) {
-    this.pluginService = pluginService;
+    this.pluginTreatSourceItemLoader = new PluginTreatSourceItemLoader(
+      pluginService
+    );
   }
 
   async load(
     treatSource: TreatSource,
-    config: TreatSourceConfig
+    setup?: TreatSourceSetupOptions,
+    config?: TreatSourceConfigOptions
   ): Promise<Array<TreatSourceItem>> {
     let items;
     if (treatSource.type === TreatSourceType.Plugin) {
-      const loader = new PluginTreatSourceItemLoader(this.pluginService);
-      items = await loader.load(treatSource, config);
+      items = await this.pluginTreatSourceItemLoader.load(
+        treatSource,
+        setup,
+        config
+      );
     } else {
       throw new Error("heeee");
     }
@@ -37,7 +44,7 @@ function roundScore<T extends Scoreable>(i: T): T {
   };
 }
 
-class PluginTreatSourceItemLoader {
+export class PluginTreatSourceItemLoader {
   pluginService: PluginService;
 
   constructor(pluginService: PluginService) {
@@ -46,15 +53,16 @@ class PluginTreatSourceItemLoader {
 
   async load(
     treatSourceEntity: PluginTreatSourceType,
-    config?: TreatSourceConfig
+    setup?: TreatSourceSetupOptions,
+    config?: TreatSourceConfigOptions
   ): Promise<Array<TreatSourceItem>> {
     const plugin = await this.pluginService.get(
       treatSourceEntity.info.pluginName
     );
 
-    const treatSource = plugin.treatSource(treatSourceEntity.name);
+    const treatSource = getPluginTreatSource(plugin, treatSourceEntity.name);
 
-    const items = await treatSource.loadItems(config);
+    const items = await treatSource.loadItems(setup, config);
 
     const itemsWithId = items.map((i) => ({
       ...i,

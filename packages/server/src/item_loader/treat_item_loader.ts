@@ -2,27 +2,22 @@ import {
   Treat,
   TreatItem,
   TreatSourceItem,
-  TreatSourceService,
+  TreatSourceService
 } from "@treats-app/core";
-import { PluginService } from "../plugin";
+import { PluginService } from "@treats-app/plugin";
 import { TreatSourceItemLoader } from "./treat_source_item_loader";
 import { applyModifiers } from "../modify";
-import { logger } from "../logger";
+import { logger } from "@treats-app/logger";
 
 function sort(items: Array<TreatItem>) {
   return items.sort((i1, i2) => i2.score - i1.score);
 }
 
 export class TreatItemLoader {
-  pluginService: PluginService;
-  treatSourceService: TreatSourceService;
   constructor(
-    pluginService: PluginService,
-    treatSourceService: TreatSourceService
-  ) {
-    this.pluginService = pluginService;
-    this.treatSourceService = treatSourceService;
-  }
+    private pluginService: PluginService,
+    private treatSourceService: TreatSourceService
+  ) {}
 
   async load(treat: Treat): Promise<Array<TreatItem>> {
     const { idTreatSource, config, modifiers } = treat;
@@ -37,7 +32,7 @@ export class TreatItemLoader {
       this.pluginService
     ).load(treatSource, config);
 
-    const modifiedItems = treatSourceItems.map((item) => {
+    const modifiedItems = treatSourceItems.map(item => {
       try {
         return applyModifiers<TreatSourceItem>(modifiers)(item);
       } catch (e) {
@@ -46,7 +41,7 @@ export class TreatItemLoader {
       }
     });
 
-    const treatItems = modifiedItems.map((i) => fromTreatSourceItem(treat, i));
+    const treatItems = modifiedItems.map(i => fromTreatSourceItem(treat, i));
     return sort(treatItems);
   }
 
@@ -66,6 +61,6 @@ function fromTreatSourceItem(
 ): TreatItem {
   return {
     ...treatSourceItem,
-    idTreat: treat.id,
+    idTreat: treat.id
   };
 }

@@ -1,9 +1,9 @@
-import { Item } from "@treats-app/core";
-import { PluginDefinition } from "../../plugin";
+import { Item, TreatSourceOptionType } from "@treats-app/core";
+import { Plugin } from "@treats-app/plugin";
 import * as TwitchAPI from "./twitch_api";
 import { ScoringPipeline, ArrayPositionPipe } from "../../item_scoring";
 
-interface TwitchPluginConfig {
+interface TwitchPluginSetup {
   clientId: string;
   token: string;
   username: string;
@@ -13,13 +13,30 @@ interface ItemInfo {
   streamerName: string;
 }
 
-const TwitchPlugin: PluginDefinition = {
+const TwitchPlugin: Plugin = {
   name: "builtin/twitch",
   treatSources: {
     Twitch: {
       name: "Twitch",
-      async loadItems(config, pluginConfig: TwitchPluginConfig) {
-        const api = new TwitchAPI.TwitchAPI(pluginConfig);
+      setup: {
+        clientId: {
+          optionName: "clientId",
+          optionType: TreatSourceOptionType.String,
+          isRequired: true,
+        },
+        token: {
+          optionName: "token",
+          optionType: TreatSourceOptionType.String,
+          isRequired: true,
+        },
+        username: {
+          optionName: "username",
+          optionType: TreatSourceOptionType.String,
+          isRequired: true,
+        },
+      },
+      async loadItems(setup: TwitchPluginSetup) {
+        const api = new TwitchAPI.TwitchAPI(setup);
         const liveStreams = await api.getLiveFollows();
         const items = liveStreams.map(mapStreamToItem);
         return new ScoringPipeline<Item<ItemInfo>>([ArrayPositionPipe]).score(

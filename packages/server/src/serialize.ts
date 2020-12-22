@@ -3,6 +3,7 @@ import {
   TreatItem,
   TreatSource,
   TreatSourceType,
+  TreatSourceSetupOptions,
   TreatSourceConfigOptions,
 } from "@treats-app/core";
 
@@ -23,7 +24,8 @@ export interface SerializedTreatSource {
   id: string;
   type: TreatSourceType;
   name: string;
-  configOptions?: TreatSourceConfigOptions;
+  setup?: TreatSourceSetupOptions;
+  config?: TreatSourceConfigOptions;
 }
 
 export interface SerializedTreatItem {
@@ -69,6 +71,6 @@ export function serializeTreatSource(
     id: source.id,
     type: source.type,
     name: source.name,
-    configOptions: source.configOptions,
+    config: source.config,
   };
 }

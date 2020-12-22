@@ -1,0 +1,15 @@
+{
+  "name": "@treats-app/plugin",
+  "version": "1.0.0",
+  "main": "dist/index.js",
+  "license": "MIT",
+  "scripts": {
+    "build": "tsc",
+    "build:watch": "tsc -w --preserveWatchOutput",
+    "dev": "yarn build:watch"
+  },
+  "dependencies": {
+    "@treats-app/core": "^1.0.0",
+    "@treats-app/logger": "^1.0.0"
+  }
+}

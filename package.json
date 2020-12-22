@@ -8,6 +8,8 @@
   "private": true,
   "workspaces": [
     "packages/core",
+    "packages/logger",
+    "packages/plugin",
     "packages/server",
     "packages/web"
   ],

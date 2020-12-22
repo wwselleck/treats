@@ -1,4 +1,4 @@
-import { Treat, TreatInput } from "./types";
+import { Treat, TreatInput, TreatSource } from "./types";
 
 async function request<T>(...fetchParams: Parameters<typeof fetch>) {
   const res = await fetch(...fetchParams);
@@ -26,4 +26,8 @@ export async function getTreats(): Promise<Array<Treat>> {
 
 export async function createTreat(input: TreatInput): Promise<Array<Treat>> {
   return post("/api/treat", input);
+}
+
+export async function getTreatSources(): Promise<Array<TreatSource>> {
+  return request("/api/treatsource");
 }

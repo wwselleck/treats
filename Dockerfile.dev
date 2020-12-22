@@ -8,6 +8,8 @@ COPY yarn.lock .
 COPY packages/server/package.json ./packages/server/package.json
 COPY packages/web/package.json ./packages/web/package.json
 COPY packages/core/package.json ./packages/core/package.json
+COPY packages/plugin/package.json ./packages/plugin/package.json
+COPY packages/logger/package.json ./packages/logger/package.json
 
 RUN yarn install --pure-lockfile --non-interactive
 

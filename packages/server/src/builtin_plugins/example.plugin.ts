@@ -1,4 +1,4 @@
-import { TreatSourceConfigOptionType } from "@treats-app/core";
+import { TreatSourceOptionType } from "@treats-app/core";
 
 const ExamplePlugin = {
   name: "builtin/example",
@@ -8,7 +8,7 @@ const ExamplePlugin = {
       configOptions: {
         exclude_c: {
           optionName: "exclude_c",
-          optionType: TreatSourceConfigOptionType.Boolean,
+          optionType: TreatSourceOptionType.Boolean,
           isRequired: false,
         },
       },

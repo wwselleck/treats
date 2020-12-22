@@ -1,12 +1,13 @@
 export * from "./serialize";
 
 import path = require("path");
-import { logger } from "./logger";
+import { logger } from "@treats-app/logger";
+import { PluginService, PluginTreatSourceService } from "@treats-app/plugin";
 import { Config } from "./config";
 import { connectToDB, MongoTreatService } from "./db";
-import { PluginService, PluginTreatSourceService } from "./plugin";
-import { UserDataTreatService } from "./user_data";
+import { LocalDataTreatService } from "./local-data";
 import { TreatItemLoader } from "./item_loader";
+import { LocalData } from "./local-data";
 import * as TreatsServer from "./server";
 
 async function loadLocalModeDeps() {
@@ -14,7 +15,8 @@ async function loadLocalModeDeps() {
     moduleDirectories: [path.resolve(__dirname, "./builtin_plugins")],
   });
   const treatSourceService = new PluginTreatSourceService(pluginService);
-  const treatService = new UserDataTreatService();
+  const localData = new LocalData(Config.DATA_PATH);
+  const treatService = new LocalDataTreatService(localData);
 
   const treatItemLoader = new TreatItemLoader(
     pluginService,

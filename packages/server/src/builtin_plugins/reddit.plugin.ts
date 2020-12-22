@@ -1,28 +1,45 @@
 import snoowrap = require("snoowrap");
 
-import { PluginDefinition } from "../plugin";
-import { Item, TreatSourceConfigOptionType } from "@treats-app/core";
+import { Plugin } from "@treats-app/plugin";
+import { Item, TreatSourceOptionType } from "@treats-app/core";
 import { ScoringPipeline, ArrayPositionPipe } from "../item_scoring";
 
-interface RedditPluginConfig {
+interface RedditPluginSetup {
   clientId: string;
   clientSecret: string;
   refreshToken: string;
 }
 
-const RedditPlugin: PluginDefinition = {
+const RedditPlugin: Plugin = {
   name: "builtin/reddit",
   treatSources: {
     Reddit: {
       name: "Reddit",
-      configOptions: {
-        test: {
-          optionName: "Test",
-          optionType: TreatSourceConfigOptionType.String,
+      setup: {
+        clientId: {
+          optionName: "clientId",
+          optionType: TreatSourceOptionType.String,
+          isRequired: true,
+        },
+        clientSecret: {
+          optionName: "clientSecret",
+          optionType: TreatSourceOptionType.String,
+          isRequired: true,
+        },
+        refreshToken: {
+          optionName: "refreshToken",
+          optionType: TreatSourceOptionType.String,
+          isRequired: true,
         },
       },
-      async loadItems(_: any, pluginConfig: RedditPluginConfig) {
-        const client = new RedditAPI(pluginConfig);
+      config: {
+        test: {
+          optionName: "Test",
+          optionType: TreatSourceOptionType.String,
+        },
+      },
+      async loadItems(setup: RedditPluginSetup) {
+        const client = new RedditAPI(setup);
         const submissions = await client.getSubmissions();
 
         const items = submissions.map(mapSubmissionToItem);

@@ -4,10 +4,8 @@ import fs = require("fs");
 import path = require("path");
 
 import { PathReporter } from "io-ts/lib/PathReporter";
+import { logger } from "@treats-app/logger";
 
-import { logger } from "../logger";
-import { UserData } from "../user_data";
-import { PluginDefinition, PluginConfig } from "./plugin_definition";
 import { Plugin } from "./plugin";
 
 // Loads and provides access to plugins that's it
@@ -17,8 +15,7 @@ interface PluginServiceOptions {
 export class PluginService {
   private constructor(
     private options: PluginServiceOptions,
-    private plugins: Record<string, Plugin>,
-    private configs: Record<string, any>
+    private plugins: Record<string, Plugin>
   ) {}
 
   static async create(options: PluginServiceOptions) {
@@ -26,21 +23,22 @@ export class PluginService {
       options.moduleDirectories
     );
     logger.info({ pluginPaths }, "Attempting to load plugins from paths");
-    const pluginDefinitions = pluginPaths
+    const plugins = pluginPaths
       .map((path) => {
         try {
-          return loadPluginDefinition(path);
+          return loadPlugin(path);
         } catch {
-          logger.error(`Could not load plugin definition ${path}`);
+          logger.error(`Could not load plugin ${path}`);
           return null;
         }
       })
-      .filter((x): x is PluginDefinition => !!x);
+      .filter((x): x is Plugin => !!x)
+      .reduce((acc, curr) => {
+        acc[curr.name] = curr;
+        return acc;
+      }, {} as Record<string, Plugin>);
 
-    const configs = await loadPluginConfigs();
-    const plugins = await createPluginInstances(pluginDefinitions, configs);
-
-    return new PluginService(options, plugins, configs);
+    return new PluginService(options, plugins);
   }
 
   async get(name: string): Promise<Plugin> {
@@ -54,41 +52,21 @@ export class PluginService {
   }
 }
 
-function loadPluginDefinition(pluginPath: string): PluginDefinition {
+function loadPlugin(pluginPath: string): Plugin {
   try {
     const mod: unknown = require(pluginPath);
-    const pluginDefinition = PluginDefinition.decode(mod);
-    if (E.isLeft(pluginDefinition)) {
+    const plugin = Plugin.decode(mod);
+    if (E.isLeft(plugin)) {
       throw new Error(
         `Plugin ${pluginPath} provided an incorrect definition ${PathReporter.report(
-          pluginDefinition
+          plugin
         )}`
       );
     }
-    return pluginDefinition.right;
+    return plugin.right;
   } catch (e) {
     throw new Error(`Error requiring plugin ${pluginPath} ${e}`);
   }
-}
-
-function loadPluginConfigs(): Promise<Record<string, PluginConfig>> {
-  const mod = UserData.readJS("plugin_config.js");
-  return mod;
-}
-
-async function createPluginInstances(
-  pluginsDefinitions: Array<PluginDefinition>,
-  configs: Record<string, PluginConfig>
-) {
-  return pluginsDefinitions
-    .map((mp) => {
-      const config = configs[mp.name];
-      return new Plugin(mp, config);
-    })
-    .reduce((acc, curr: Plugin) => {
-      acc[curr.name] = curr;
-      return acc;
-    }, {} as Record<string, Plugin>);
 }
 
 async function getPluginPathsFromDirectory(directoryPath: string) {

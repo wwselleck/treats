@@ -1,11 +1,17 @@
 {
   "treats": [
     {
-      "name": "LocalExampleTreat",
-      "idTreatSource": "example_treat_source",
+      "idTreatSource": "builtin/example_ExampleTreatSource",
+      "name": "Fuck",
       "config": {
-        "exclude_c": true
+        "option": "apples",
+        "numberoption": 2
       }
+    },
+    {
+      "idTreatSource": "builtin/twitch_Twitch",
+      "name": "Twitch"
     }
   ]
 }
+

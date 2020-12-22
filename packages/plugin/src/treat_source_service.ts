@@ -4,7 +4,7 @@ import {
   TreatSourceService,
 } from "@treats-app/core";
 import { PluginService } from "./plugin_service";
-import { Plugin, PluginTreatSource } from "./plugin";
+import { Plugin, PluginTreatSource, getPluginTreatSource } from "./plugin";
 
 export class PluginTreatSourceService implements TreatSourceService {
   pluginService: PluginService;
@@ -21,8 +21,10 @@ export class PluginTreatSourceService implements TreatSourceService {
     if (!plugin) {
       return null;
     }
-
-    const pluginTreatSource = plugin.treatSource(pluginTreatSourceName);
+    const pluginTreatSource = getPluginTreatSource(
+      plugin,
+      pluginTreatSourceName
+    );
 
     if (!pluginTreatSource) {
       return null;
@@ -37,10 +39,10 @@ export class PluginTreatSourceService implements TreatSourceService {
     const treatSources = plugins
       .map((p: Plugin) => ({
         plugin: p,
-        treatSources: p.treatSources(),
+        treatSources: p.treatSources,
       }))
       .map((obj) =>
-        obj.treatSources.map((ts) =>
+        Object.values(obj.treatSources).map((ts) =>
           treatSourceFromPluginTreatSource(obj.plugin, ts)
         )
       )
@@ -60,7 +62,7 @@ export function treatSourceFromPluginTreatSource(
   return {
     id: idForPluginTreatSource(plugin, pluginTreatSource),
     name: pluginTreatSource.name,
-    configOptions: pluginTreatSource.configOptions,
+    config: pluginTreatSource.config,
     type: TreatSourceType.Plugin,
     info: {
       pluginName: plugin.name,
